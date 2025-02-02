@@ -36,7 +36,13 @@ export default function Navbar() {
   return (
     <header className="fixed w-full top-0 flex h-24 items-center justify-between gap-4 px-4 md:px-6">
       <nav className="hidden flex-col gap-6 font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-10">
-        <Image src="/tc-logo-white.png" alt="tc-logo" width={50} height={50} />
+        <Image
+          src="/tc-logo-white.png"
+          alt="tc-logo"
+          className="max-w-16 max-h-16"
+          width={1667}
+          height={1667}
+        />
         {nav_items.map((n) => (
           <Link
             key={n.name}
@@ -59,8 +65,9 @@ export default function Navbar() {
             <Image
               src="/tc-logo-white.png"
               alt="tc-logo"
-              width={50}
-              height={50}
+              className="max-w-16 max-h-16"
+              width={1667}
+              height={1667}
             />
             {nav_items.map((i) => (
               <Link key={i.href} href={i.href} className="text-white">

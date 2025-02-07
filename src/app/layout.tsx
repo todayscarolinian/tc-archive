@@ -22,9 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${robotoCondensed.variable} bg-[#F8F8F8] overflow-y-hidden`}
-      >
+      <body className={`${robotoCondensed.variable} bg-[#F8F8F8]`}>
         <Navbar />
         {children}
         <Footer />

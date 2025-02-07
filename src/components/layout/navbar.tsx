@@ -13,45 +13,71 @@ import {
 import { Menu } from "lucide-react";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
-const nav_items = [
-  {
-    href: "/browse",
-    name: "Browse",
-    protected: false,
-  },
-  {
-    href: "/about",
-    name: "About",
-    protected: false,
-  },
-  {
-    href: "/donate",
-    name: "Donate",
-    protected: false,
-  },
-];
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export default function Navbar() {
   return (
     <header className="fixed w-full top-0 flex h-24 items-center justify-between gap-4 px-4 md:px-6">
       <nav className="hidden flex-col gap-6 font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-10">
-        <Image
-          src="/tc-logo-white.png"
-          alt="tc-logo"
-          className="max-w-16 max-h-16"
-          width={1667}
-          height={1667}
-        />
-        {nav_items.map((n) => (
-          <Link
-            key={n.name}
-            href={n.href}
-            className="text-black transition-colors hover:text-primary-500 hover:font-bold text-base"
-          >
-            {n.name}
-          </Link>
-        ))}
+        <Link href="/">
+          <Image
+            src="/tc-logo-white.png"
+            alt="tc-logo"
+            className="max-w-16 max-h-16"
+            width={1667}
+            height={1667}
+          />
+        </Link>
+        <Link
+          href="/browse"
+          className="text-black transition-colors hover:text-primary-500 hover:font-bold text-base"
+        >
+          Browse
+        </Link>
+        <Link
+          href="/about"
+          className="text-black transition-colors hover:text-primary-500 hover:font-bold text-base"
+        >
+          About
+        </Link>
+        <Dialog>
+          <DialogTrigger className="text-black transition-colors hover:text-primary-500 hover:font-bold text-base cursor-pointer">
+            Donate
+          </DialogTrigger>
+          <DialogContent>
+            <DialogTitle>Support Today&apos;s Carolinian</DialogTitle>
+            <DialogDescription></DialogDescription>
+            <p>
+              Today&apos;s Carolinian has been operating independently since
+              2019, without funding from the university. To support the
+              publication, please make a donation through our finance officer:
+            </p>
+            <p className="mt-2">
+              <strong>Finance Officer: Mi*****a M.</strong>
+              <br />
+              <strong>Contact: 09668273480 - GCash</strong>
+            </p>
+            <Link
+              href="/donationQR.jpg"
+              target="_blank"
+              className="flex justify-center"
+            >
+              <Image
+                src="/donationQR.jpg"
+                alt="donationQRCode"
+                width={200}
+                height={200}
+                className="mt-4 rounded-lg hover:scale-110 transition-all duration-300"
+              />
+            </Link>
+          </DialogContent>
+        </Dialog>
       </nav>
       <Sheet>
         <SheetTrigger asChild>
@@ -62,18 +88,54 @@ export default function Navbar() {
         </SheetTrigger>
         <SheetContent side="left" className="bg-primary-500">
           <nav className="grid gap-6 text-lg font-medium">
-            <Image
-              src="/tc-logo-white.png"
-              alt="tc-logo"
-              className="max-w-16 max-h-16"
-              width={1667}
-              height={1667}
-            />
-            {nav_items.map((i) => (
-              <Link key={i.href} href={i.href} className="text-white">
-                {i.name}
-              </Link>
-            ))}
+            <Link href="/">
+              <Image
+                src="/tc-logo-white.png"
+                alt="tc-logo"
+                className="max-w-16 max-h-16"
+                width={1667}
+                height={1667}
+              />
+            </Link>
+            <Link href="/browse" className="text-white">
+              Browse
+            </Link>
+            <Link href="/about" className="text-white">
+              About
+            </Link>
+            <Dialog>
+              <DialogTrigger className="text-white text-left">
+                Donate
+              </DialogTrigger>
+              <DialogContent>
+                <DialogTitle>Support Today&apos;s Carolinian</DialogTitle>
+                <DialogDescription></DialogDescription>
+                <p>
+                  Today&apos;s Carolinian has been operating independently since
+                  2019, without funding from the university. To support the
+                  publication, please make a donation through our finance
+                  officer:
+                </p>
+                <p className="mt-2">
+                  <strong>Finance Officer: Mi*****a M.</strong>
+                  <br />
+                  <strong>Contact: 09668273480 - GCash</strong>
+                </p>
+                <Link
+                  href="/donationQR.jpg"
+                  target="_blank"
+                  className="flex justify-center"
+                >
+                  <Image
+                    src="/donationQR.jpg"
+                    alt="donationQRCode"
+                    width={200}
+                    height={200}
+                    className="mt-4 rounded-lg hover:scale-110 transition-all duration-300"
+                  />
+                </Link>
+              </DialogContent>
+            </Dialog>
           </nav>
         </SheetContent>
       </Sheet>

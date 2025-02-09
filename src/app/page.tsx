@@ -1,6 +1,6 @@
 "use client";
 
-import IssueDialog from "@/components/add-issue-dialog";
+import IssueDialog from "@/components/issue-dialog";
 import { AddIssuePayload, EditIssuePayload } from "@/lib/types/issues.types";
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";

@@ -13,6 +13,7 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -48,6 +49,7 @@ export default function IssueDialog({
     onSubmit,
 }: IssueDialogProps) {
     const [open, setOpen] = useState(false);
+    const [openDelete, setOpenDelete] = useState(false);
 
     const form = useForm<AddIssuePayload | EditIssuePayload>({
         resolver: zodResolver(
@@ -363,19 +365,70 @@ export default function IssueDialog({
                             />
                         </div>
                         <div className="flex justify-end gap-2">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                className="bg-white hover:bg-primary-700 text-primary-500 hover:text-white border-primary-500 flex cursor-pointer px-3 py-2 rounded-md items-center gap-2"
-                                onClick={() => setOpen(false)}
-                            >
-                                Cancel
-                            </Button>
+                            {mode === "add" ? (
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    className="bg-white hover:bg-primary-700 text-primary-500 hover:text-white border-primary-500 flex cursor-pointer px-3 py-2 rounded-md items-center gap-2"
+                                    onClick={() => setOpen(false)}
+                                >
+                                    Cancel
+                                </Button>
+                            ) : (
+                                <>
+                                    <Dialog
+                                        open={openDelete}
+                                        onOpenChange={setOpenDelete}
+                                    >
+                                        <DialogTrigger asChild>
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                className="bg-white hover:bg-primary-700 text-primary-500 hover:text-white border-primary-500 flex cursor-pointer px-3 py-2 rounded-md items-center gap-2"
+                                            >
+                                                Delete
+                                            </Button>
+                                        </DialogTrigger>
+                                        <DialogContent>
+                                            <DialogHeader>
+                                                <DialogTitle>
+                                                    Are you absolutely sure?
+                                                </DialogTitle>
+                                            </DialogHeader>
+                                            This action cannot be undone. This
+                                            will permanently delete your account
+                                            and remove your data from our
+                                            servers.
+                                            <DialogFooter className="flex justify-end gap-2">
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    className="bg-white hover:bg-primary-700 text-primary-500 hover:text-white border-primary-500 flex cursor-pointer px-3 py-2 rounded-md items-center gap-2"
+                                                    onClick={() =>
+                                                        setOpenDelete(false)
+                                                    }
+                                                >
+                                                    Cancel
+                                                </Button>
+                                                <Button
+                                                    type="submit"
+                                                    className="bg-primary-500 hover:bg-primary-700 text-white flex cursor-pointer px-3 py-2 rounded-md items-center gap-2"
+                                                    onClick={() =>
+                                                        setOpen(false)
+                                                    }
+                                                >
+                                                    Continue
+                                                </Button>
+                                            </DialogFooter>
+                                        </DialogContent>
+                                    </Dialog>
+                                </>
+                            )}
                             <Button
                                 type="submit"
                                 className="bg-primary-500 hover:bg-primary-700 text-white flex cursor-pointer px-3 py-2 rounded-md items-center gap-2"
                             >
-                                {mode === "add" ? "Submit" : "Save Changes"}
+                                {mode === "add" ? "Submit" : "Save"}
                             </Button>
                         </div>
                     </form>

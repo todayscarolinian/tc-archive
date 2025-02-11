@@ -8,8 +8,10 @@ const BrowsePage = () => {
       <div className="flex justify-center">
         <Input placeholder="Search issues..." className="w-full max-w-lg" />
       </div>
-      <Recents />
-      <Folders />
+      <div className="space-y-12">
+        <Recents />
+        <Folders />
+      </div>
     </section>
   );
 };

@@ -41,12 +41,14 @@ interface IssueDialogProps {
     mode: "add" | "edit";
     defaultValues?: EditIssuePayload;
     onSubmit: (data: AddIssuePayload | EditIssuePayload) => Promise<void>;
+    yearFromRoute?: string;
 }
 
 export default function IssueDialog({
     mode,
     defaultValues,
     onSubmit,
+    yearFromRoute,
 }: IssueDialogProps) {
     const [open, setOpen] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
@@ -58,7 +60,9 @@ export default function IssueDialog({
         defaultValues: defaultValues || {
             title: "",
             publisher: "",
-            publicationYear: new Date().getFullYear(),
+            publicationYear: yearFromRoute
+                ? parseInt(yearFromRoute)
+                : new Date().getFullYear(),
             volume: 1,
             issueNumber: 1,
             category: "Magazine",
@@ -164,6 +168,7 @@ export default function IssueDialog({
                                         <Input
                                             type="number"
                                             placeholder="Enter year"
+                                            disabled={!!yearFromRoute}
                                             {...field}
                                             onChange={(e) =>
                                                 field.onChange(

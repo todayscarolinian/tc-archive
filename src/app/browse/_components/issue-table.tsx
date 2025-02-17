@@ -4,6 +4,14 @@ import {
   getCoreRowModel,
   flexRender,
 } from "@tanstack/react-table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { IssueType, mockData } from "@/constants/browse-mock-data";
 import { FileText, PenSquare } from "lucide-react";
 
@@ -56,21 +64,19 @@ const IssueTable = () => {
 
   return (
     <div className="overflow-auto border border-gray-200 rounded-lg">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50 border">
+      <Table className="min-w-full divide-y divide-gray-200">
+        <TableHeader className="bg-gray-50 border">
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th
+            <TableRow key={headerGroup.id} className="w-full">
+              {headerGroup.headers.map((header, index) => (
+                <TableHead
                   key={header.id}
-                  className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                  className={`px-6 py-3 text-left text-sm font-medium text-gray-500 ${index === 0 ? 'w-2xl max-w-2xl truncate whitespace-nowrap' : ''
+                    }`}
                   onClick={header.column.getToggleSortingHandler()}
                 >
                   <div className="flex items-center gap-2">
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
+                    {flexRender(header.column.columnDef.header, header.getContext())}
                     {header.column.getCanSort() && (
                       <span className="text-gray-400">
                         <svg
@@ -91,27 +97,29 @@ const IssueTable = () => {
                       </span>
                     )}
                   </div>
-                </th>
+                </TableHead>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
+        </TableHeader>
+        <TableBody className="bg-white divide-y divide-gray-200">
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="hover:bg-gray-50">
-              {row.getVisibleCells().map((cell) => (
-                <td
+            <TableRow key={row.id} className="hover:bg-gray-50 w-full">
+              {row.getVisibleCells().map((cell, index) => (
+                <TableCell
                   key={cell.id}
-                  className="px-6 py-4 items-center whitespace-nowrap text-sm text-gray-700"
+                  className={`px-6 py-3 text-left text-sm font-medium text-gray-500 ${index === 0 ? 'w-2xl max-w-2xl truncate whitespace-nowrap' : ''
+                    }`}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
+                </TableCell>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
+
   );
 };
 

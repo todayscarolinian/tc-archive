@@ -22,8 +22,10 @@ const IssueTable = () => {
     columnHelper.accessor("title", {
       cell: (info) => (
         <div className="flex items-center gap-3">
-          <FileText />
-          <span>{info.getValue()}</span>
+          <div className="border p-2 bg-gray-100/50 rounded-xl">
+            <FileText />
+          </div>
+          <span className="font-semibold">{info.getValue()}</span>
         </div>
       ),
       header: "Name",

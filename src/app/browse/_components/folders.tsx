@@ -2,15 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Plus, Dot, FolderOpen } from "lucide-react";
 import { useRouter } from "next/navigation";
-
-const mockData = [
-  { year: "1964", numOfIssues: "6 issues", lastModified: "2023-03-31 12:09:14" },
-  { year: "1965", numOfIssues: "4 issues", lastModified: "2023-03-31 12:09:14" },
-  { year: "1966", numOfIssues: "3 issues", lastModified: "2023-03-31 12:09:14" },
-  { year: "1967", numOfIssues: "7 issues", lastModified: "2023-03-31 12:09:14" },
-  { year: "1968", numOfIssues: "5 issues", lastModified: "2023-03-31 12:09:14" },
-  { year: "1969", numOfIssues: "2 issues", lastModified: "2023-03-31 12:09:14" },
-];
+import { mockData } from "@/constants/browse-mock-data";
 
 const Folders = () => {
   const router = useRouter()
@@ -36,7 +28,7 @@ const Folders = () => {
             <div>
               <h2 className="font-bold text-md sm:text-lg">{folder.year}</h2>
               <div className="flex items-center text-xs sm:text-sm text-muted-foreground">
-                <span>{folder.numOfIssues}</span>
+                <span>{folder.issues.length} issues</span>
                 <Dot className="mx-1 w-4 h-4" />
                 <span>{folder.lastModified}</span>
               </div>

@@ -42,7 +42,7 @@ export default function BrowsePage({ params }: PageProps) {
       </div>
       {/* TODO: Table for the issues below */}
       <div>
-        <IssueTable />
+        <IssueTable yearFolder={Number(year)} />
       </div>
     </div>
   );

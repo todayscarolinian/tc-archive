@@ -2,47 +2,48 @@
 import IssueDialog from "@/components/issue-dialog";
 import { AddIssuePayload, EditIssuePayload } from "@/lib/types/issues.types";
 import { use, useState } from "react";
+import IssueTable from "../_components/issue-table";
 
 interface PageProps {
-    params: Promise<{ year: string }>;
+  params: Promise<{ year: string }>;
 }
 export default function BrowsePage({ params }: PageProps) {
-    const { year } = use(params) as { year: string };
-    const [issues, setIssues] = useState<EditIssuePayload[]>([]);
+  const { year } = use(params) as { year: string };
+  const [issues, setIssues] = useState<EditIssuePayload[]>([]);
 
-    // // Simulated add issue function
-    const handleAddIssue = async (data: AddIssuePayload) => {
-        try {
-            // Simulate API call delay
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+  // // Simulated add issue function
+  const handleAddIssue = async (data: AddIssuePayload) => {
+    try {
+      // Simulate API call delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-            // Add new issue to state with a mock ID
-            setIssues((prev) => [...prev, { ...data, id: prev.length + 1 }]);
+      // Add new issue to state with a mock ID
+      setIssues((prev) => [...prev, { ...data, id: prev.length + 1 }]);
 
-            console.log("Issue added successfully");
-        } catch (error) {
-            console.error(error);
-            console.log("Failed to add issue");
-        }
-    };
+      console.log("Issue added successfully");
+    } catch (error) {
+      console.error(error);
+      console.log("Failed to add issue");
+    }
+  };
 
-    return (
-        <div>
-            <div className="space-y-6">
-                <h1 className="font-bold text-2xl">Index of /browse/{year}</h1>
-                <div className="flex items-center justify-between">
-                    <h1 className="text-lg">All Files</h1>
-                    <IssueDialog
-                        mode="add"
-                        onSubmit={handleAddIssue}
-                        yearFromRoute={year}
-                    />
-                </div>
-            </div>
-            {/* TODO: Table for the issues below */}
-            <div className="flex justify-center items-center h-64">
-                <h1>Table showing the issues here...</h1>
-            </div>
+  return (
+    <div className="space-y-6">
+      <div className="space-y-6">
+        <h1 className="font-bold text-2xl">Index of /browse/{year}</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-lg">All Files</h1>
+          <IssueDialog
+            mode="add"
+            onSubmit={handleAddIssue}
+            yearFromRoute={year}
+          />
         </div>
-    );
+      </div>
+      {/* TODO: Table for the issues below */}
+      <div>
+        <IssueTable yearFolder={Number(year)} />
+      </div>
+    </div>
+  );
 }

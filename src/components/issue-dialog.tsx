@@ -12,7 +12,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -40,8 +39,9 @@ import { Pencil, Plus, Upload } from "lucide-react";
 interface IssueDialogProps {
   mode: "add" | "edit";
   defaultValues?: EditIssuePayload;
-  onSubmit: (data: AddIssuePayload | EditIssuePayload) => Promise<void>;
+  onSubmit: (data: EditIssuePayload) => Promise<void>;
   yearFromRoute?: string;
+  //   issueData?: EditIssuePayload;
 }
 
 export default function IssueDialog({
@@ -49,7 +49,8 @@ export default function IssueDialog({
   defaultValues,
   onSubmit,
   yearFromRoute,
-}: IssueDialogProps) {
+}: //   issueData,
+IssueDialogProps) {
   const [open, setOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
@@ -57,19 +58,40 @@ export default function IssueDialog({
 
   const form = useForm<AddIssuePayload | EditIssuePayload>({
     resolver: zodResolver(mode === "add" ? AddIssueSchema : EditIssueSchema),
-    defaultValues: defaultValues || {
-      title: "",
-      publisher: "",
-      publicationYear: yearFromRoute
-        ? parseInt(yearFromRoute)
-        : new Date().getFullYear(),
-      volume: 1,
-      issueNumber: 1,
-      category: "Magazine",
-      thumbnailLink: "",
-      pdfLink: "",
-    },
+    defaultValues:
+      mode === "add"
+        ? {
+            title: "",
+            publisher: "",
+            publicationYear: yearFromRoute
+              ? parseInt(yearFromRoute)
+              : new Date().getFullYear(),
+            volume: 1,
+            issueNumber: 1,
+            category: "Magazine" as "Magazine",
+            thumbnailLink: "",
+            pdfLink: "",
+          }
+        : defaultValues,
   });
+
+  async function handleSubmit(data: AddIssuePayload | EditIssuePayload) {
+    try {
+      if (mode === "add") {
+        const transformedData: EditIssuePayload = {
+          id: 0,
+          ...(data as AddIssuePayload),
+        };
+        await onSubmit(transformedData);
+      } else {
+        await onSubmit(data as EditIssuePayload);
+      }
+      setOpen(false);
+      form.reset();
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
@@ -84,16 +106,6 @@ export default function IssueDialog({
       form.setValue("pdfLink", e.target.files[0].name);
     }
   };
-
-  async function handleSubmit(data: AddIssuePayload | EditIssuePayload) {
-    try {
-      await onSubmit(data);
-      setOpen(false);
-      form.reset();
-    } catch (error) {
-      console.error(error);
-    }
-  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

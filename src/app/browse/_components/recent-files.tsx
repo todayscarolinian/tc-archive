@@ -2,7 +2,11 @@ import { Dot, FileText } from "lucide-react";
 import { mockData } from "@/constants/browse-mock-data";
 
 const Recents = () => {
-  const recentIssues = mockData.flatMap((folder) => folder.issues);
+  // Simulating sorted arrangement for recent files section (This could be done in the server)
+  const recentIssues = mockData
+    .flatMap((folder) => folder.issues)
+    .sort((a, b) => new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime())
+    .slice(0, 4);
 
   return (
     <section className="space-y-6">

@@ -96,6 +96,21 @@ export const mockData: FolderType[] = [
     ]
   },
   {
+    year: 1962,
+    lastModified: "",
+    issues: []
+  },
+  {
+    year: 1963,
+    lastModified: "",
+    issues: []
+  },
+  {
+    year: 1964,
+    lastModified: "",
+    issues: []
+  },
+  {
     year: 1965,
     lastModified: "2023-04-15 11:30:00",
     issues: [
@@ -135,6 +150,16 @@ export const mockData: FolderType[] = [
     ]
   },
   {
+    year: 1972,
+    lastModified: "",
+    issues: []
+  },
+  {
+    year: 1973,
+    lastModified: "",
+    issues: []
+  },
+  {
     year: 1975,
     lastModified: "2023-05-10 15:45:22",
     issues: [
@@ -165,6 +190,11 @@ export const mockData: FolderType[] = [
     ]
   },
   {
+    year: 1982,
+    lastModified: "",
+    issues: []
+  },
+  {
     year: 1985,
     lastModified: "2023-06-20 13:15:44",
     issues: [
@@ -180,6 +210,11 @@ export const mockData: FolderType[] = [
     ]
   },
   {
+    year: 1987,
+    lastModified: "",
+    issues: []
+  },
+  {
     year: 1990,
     lastModified: "2023-03-31 12:09:14",
     issues: [
@@ -193,5 +228,10 @@ export const mockData: FolderType[] = [
         isAdmin: true
       }
     ]
+  },
+  {
+    year: 1991,
+    lastModified: "",
+    issues: []
   }
 ]

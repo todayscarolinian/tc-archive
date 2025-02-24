@@ -1,8 +1,13 @@
 import { Input } from "@/components/ui/input";
+import { Metadata } from "next";
 
 type BrowseLayoutProps = {
   children: React.ReactNode;
 };
+
+export const metadata: Metadata = {
+  title: "Browse | Digital Archive"
+}
 
 const BrowseLayout = ({ children }: BrowseLayoutProps) => {
   return (

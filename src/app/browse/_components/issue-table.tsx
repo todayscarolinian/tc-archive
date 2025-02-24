@@ -18,10 +18,7 @@ import {
 import { IssueType, mockData } from "@/constants/browse-mock-data";
 import { FileText, PenSquare, ArrowUp, ArrowDown } from "lucide-react";
 import { useState, useMemo } from "react";
-
-interface IssueTableProps {
-  yearFolder: number;
-}
+import { IssueTableProps } from "../_types/issue-table.types";
 
 const IssueTable = ({ yearFolder }: IssueTableProps) => {
   const columnHelper = createColumnHelper<IssueType>();

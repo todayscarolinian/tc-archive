@@ -3,6 +3,7 @@ import IssueDialog from "@/components/issue-dialog";
 import { AddIssuePayload, EditIssuePayload } from "@/lib/types/issues.types";
 import { use, useState } from "react";
 import IssueTable from "../_components/issue-table";
+import IssueTableSkeleton from "../_components/issue-table-skeleton";
 
 interface PageProps {
   params: Promise<{ year: string }>;
@@ -10,6 +11,14 @@ interface PageProps {
 export default function BrowsePage({ params }: PageProps) {
   const { year } = use(params) as { year: string };
   const [issues, setIssues] = useState<EditIssuePayload[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate initial data loading
+  useState(() => {
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+  });
 
   // // Simulated add issue function
   const handleAddIssue = async (data: AddIssuePayload) => {
@@ -40,9 +49,12 @@ export default function BrowsePage({ params }: PageProps) {
           />
         </div>
       </div>
-      {/* TODO: Table for the issues below */}
       <div>
-        <IssueTable yearFolder={Number(year)} />
+        {isLoading ? (
+          <IssueTableSkeleton yearFolder={Number(year)} />
+        ) : (
+          <IssueTable yearFolder={Number(year)} />
+        )}
       </div>
     </div>
   );

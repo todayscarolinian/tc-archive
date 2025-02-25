@@ -16,15 +16,44 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { IssueType, mockData } from "@/constants/browse-mock-data";
-import { FileText, PenSquare, ArrowUp, ArrowDown } from "lucide-react";
+import { FileText, ArrowUp, ArrowDown } from "lucide-react";
 import { useState, useMemo } from "react";
+import IssueDialog from "@/components/issue-dialog";
+import { EditIssuePayload } from "@/lib/types/issues.types";
+import { User } from "firebase/auth";
+import { onAuthStateChanged } from "@/lib/firebase/auth";
 import { IssueTableProps } from "../_types/issue-table.types";
 
 const IssueTable = ({ yearFolder }: IssueTableProps) => {
+  const [user, setUser] = useState<User | null>(null);
+
+  onAuthStateChanged((user) => {
+    setUser(user);
+  });
+
   const columnHelper = createColumnHelper<IssueType>();
   const [sorting, setSorting] = useState<SortingState>([
     { id: "title", desc: false },
   ]);
+  const [editIssue, setEditIssue] = useState<EditIssuePayload[]>([]);
+
+  // Simulated edit issue function
+  const handleEditIssue = async (data: EditIssuePayload) => {
+    try {
+      // Simulate API call delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Update issue in state
+      setEditIssue((prev) =>
+        prev.map((issue) => (issue.id === data.id ? data : issue))
+      );
+
+      console.log("Issue updated successfully");
+    } catch (error) {
+      console.error(error);
+      console.log("Failed to update issue");
+    }
+  };
 
   const issues = useMemo(() => {
     const folder = mockData.find((folder) => folder.year == yearFolder);
@@ -36,6 +65,26 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
 
     return folder.issues || [];
   }, [yearFolder]);
+
+  //   helper to convert IssueType to EditIssuePayload
+  const mapIssueToEditIssuePayload = (
+    issue: IssueType,
+    yearFolder: number
+  ): EditIssuePayload => ({
+    id: 0,
+    title: issue.title,
+    publisher: issue.publisher,
+    volume: issue.volume,
+    category: issue.category as
+      | "Magazine"
+      | "Newsletter"
+      | "Photobook"
+      | "Miscellaneous",
+    publicationYear: yearFolder,
+    issueNumber: 1,
+    thumbnailLink: "",
+    pdfLink: "",
+  });
 
   const columns = [
     columnHelper.accessor("title", {
@@ -71,13 +120,19 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
       enableSorting: true,
     }),
     columnHelper.accessor("isAdmin", {
-      cell: (info) => (
-        <div>
-          <button className="p-2 bg-red-800 text-white rounded-md">
-            <PenSquare size={20} />
-          </button>
-        </div>
-      ),
+      cell: (info) => {
+        const editValues = mapIssueToEditIssuePayload(
+          info.row.original,
+          yearFolder
+        );
+        return (
+            <IssueDialog
+              mode="edit"
+              defaultValues={editValues}
+              onSubmit={handleEditIssue}
+            />
+        );
+      },
       header: "Action",
       enableSorting: false,
     }),
@@ -115,10 +170,11 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
               {headerGroup.headers.map((header, index) => (
                 <TableHead
                   key={header.id}
-                  className={`px-6 py-3 text-left text-sm font-medium text-gray-500 ${index === 0
+                  className={`px-6 py-3 text-left text-sm font-medium text-gray-500 ${
+                    index === 0
                       ? "w-2xl max-w-2xl truncate whitespace-nowrap"
                       : ""
-                    }`}
+                  }`}
                   onClick={
                     header.column.getCanSort()
                       ? () => handleSortingChange(header.column.id)
@@ -159,10 +215,11 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
                 {row.getVisibleCells().map((cell, index) => (
                   <TableCell
                     key={cell.id}
-                    className={`px-6 py-3 text-left text-sm font-medium text-gray-500 ${index === 0
+                    className={`px-6 py-3 text-left text-sm font-medium text-gray-500 ${
+                      index === 0
                         ? "w-2xl max-w-2xl truncate whitespace-nowrap"
                         : ""
-                      }`}
+                    }`}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>

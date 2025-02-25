@@ -37,6 +37,8 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
   ]);
   const [editIssue, setEditIssue] = useState<EditIssuePayload[]>([]);
 
+  console.log(editIssue);
+
   // Simulated edit issue function
   const handleEditIssue = async (data: EditIssuePayload) => {
     try {

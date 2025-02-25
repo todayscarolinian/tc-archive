@@ -17,6 +17,8 @@ const Folders = () => {
     setUser(user);
   });
 
+  console.log(issues);
+
   // Simulated add issue function
   const handleAddIssue = async (data: AddIssuePayload) => {
     try {

@@ -29,6 +29,8 @@ export default function BrowsePage({ params }: PageProps) {
     }, 1000);
   });
 
+  console.log(issues);
+
   // // Simulated add issue function
   const handleAddIssue = async (data: AddIssuePayload) => {
     try {

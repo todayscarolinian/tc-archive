@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { signInWithGoogle } from "@/lib/firebase/auth";
 import Link from "next/link";
 
 export default function Login() {
@@ -28,7 +29,10 @@ export default function Login() {
             </CardDescription>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4 text-muted-foreground">
-            <Button className="w-full bg-primary-500 hover:bg-primary-700 hover:cursor-pointer">
+            <Button
+              className="w-full bg-primary-500 hover:bg-primary-700 hover:cursor-pointer"
+              onClick={signInWithGoogle}
+            >
               Login with Google
             </Button>
             <span className="text-sm">

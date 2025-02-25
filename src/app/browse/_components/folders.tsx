@@ -10,6 +10,8 @@ const Folders = () => {
   const router = useRouter();
   const [issues, setIssues] = useState<EditIssuePayload[]>([]);
 
+  console.log(issues);
+
   // Simulated add issue function
   const handleAddIssue = async (data: AddIssuePayload) => {
     try {

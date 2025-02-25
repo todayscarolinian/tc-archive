@@ -1,4 +1,3 @@
-import { Input } from "@/components/ui/input";
 import Recents from "./_components/recent-files";
 import Folders from "./_components/folders";
 

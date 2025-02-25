@@ -16,7 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { IssueType, mockData } from "@/constants/browse-mock-data";
-import { FileText, PenSquare, ArrowUp, ArrowDown } from "lucide-react";
+import { FileText, ArrowUp, ArrowDown } from "lucide-react";
 import { useState, useMemo } from "react";
 import IssueDialog from "@/components/issue-dialog";
 import { EditIssuePayload } from "@/lib/types/issues.types";
@@ -31,6 +31,8 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
     { id: "title", desc: false },
   ]);
   const [editIssue, setEditIssue] = useState<EditIssuePayload[]>([]);
+
+  console.log(editIssue);
 
   // Simulated edit issue function
   const handleEditIssue = async (data: EditIssuePayload) => {

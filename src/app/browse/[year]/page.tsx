@@ -11,6 +11,8 @@ export default function BrowsePage({ params }: PageProps) {
   const { year } = use(params) as { year: string };
   const [issues, setIssues] = useState<EditIssuePayload[]>([]);
 
+  console.log(issues);
+
   // // Simulated add issue function
   const handleAddIssue = async (data: AddIssuePayload) => {
     try {

@@ -215,7 +215,7 @@ const SearchInput = () => {
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto px-4">
+    <div className="w-full max-w-lg mx-auto px-4 relative">
       {/* Search bar */}
       <div className="w-full mb-2">
         <div className="relative">
@@ -240,9 +240,9 @@ const SearchInput = () => {
         </div>
       </div>
 
-      {/* Scrollable Results Area with same width as search bar */}
+      {/* Scrollable Results Area (Now Overlapping) */}
       {showResults && (
-        <div className="border rounded-md overflow-hidden w-full">
+        <div className="absolute top-full left-0 w-full border rounded-md overflow-hidden bg-white shadow-lg z-50">
           {isLoading ? (
             <div className="text-center py-4">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-500 mx-auto"></div>

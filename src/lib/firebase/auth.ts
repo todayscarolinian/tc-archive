@@ -22,6 +22,18 @@ export function onAuthStateChanged(cb: NextOrObserver<User>) {
     return _onAuthStateChanged(auth, cb);
 }
 
+/**
+ * Signs the user in with Google.
+ *
+ * This function uses the Firebase `signInWithPopup` method to sign the user in
+ * with a Google account. It will first prompt the user to select a Google
+ * account to sign in with, and then validate the user's email address against
+ * the list of authorized emails in the Firestore users collection. If the
+ * email is valid, the user will be signed in; otherwise, the user will be
+ * signed out and an error toast will be displayed.
+ *
+ * @throws Will log an error to the console if the sign-in process fails.
+ */
 export async function signInWithGoogle() {
     const provider = new GoogleAuthProvider();
 

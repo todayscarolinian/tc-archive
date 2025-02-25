@@ -14,6 +14,15 @@ import { signInWithGoogle } from "@/lib/firebase/auth";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+/**
+ * A component that renders a login page for staff members.
+ *
+ * The login page consists of a card with a title, description, and a button to
+ * login with Google. If the user doesn't have an account, there is a link to
+ * contact the staff.
+ *
+ * @returns A login page component.
+ */
 export default function Login() {
   const router = useRouter();
   return (

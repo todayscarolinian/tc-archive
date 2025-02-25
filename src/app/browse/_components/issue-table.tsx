@@ -20,12 +20,20 @@ import { FileText, ArrowUp, ArrowDown } from "lucide-react";
 import { useState, useMemo } from "react";
 import IssueDialog from "@/components/issue-dialog";
 import { EditIssuePayload } from "@/lib/types/issues.types";
+import { User } from "firebase/auth";
+import { onAuthStateChanged } from "@/lib/firebase/auth";
 
 interface IssueTableProps {
   yearFolder: number;
 }
 
 const IssueTable = ({ yearFolder }: IssueTableProps) => {
+  const [user, setUser] = useState<User | null>(null);
+
+  onAuthStateChanged((user) => {
+    setUser(user);
+  });
+
   const columnHelper = createColumnHelper<IssueType>();
   const [sorting, setSorting] = useState<SortingState>([
     { id: "title", desc: false },
@@ -121,11 +129,11 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
           yearFolder
         );
         return (
-          <IssueDialog
-            mode="edit"
-            defaultValues={editValues}
-            onSubmit={handleEditIssue}
-          />
+            <IssueDialog
+              mode="edit"
+              defaultValues={editValues}
+              onSubmit={handleEditIssue}
+            />
         );
       },
       header: "Action",

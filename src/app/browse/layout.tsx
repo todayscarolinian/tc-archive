@@ -1,5 +1,5 @@
-import { Input } from "@/components/ui/input";
 import { Metadata } from "next";
+import SearchInput from "./_components/search-input";
 
 type BrowseLayoutProps = {
   children: React.ReactNode;
@@ -16,9 +16,7 @@ const BrowseLayout = ({ children }: BrowseLayoutProps) => {
         For the Search feature, we could query and keep hitting the database or 
         cache the data first and do simple filtering in the client side 
       */}
-      <div className="flex justify-center">
-        <Input placeholder="Search issues..." className="w-full max-w-lg" />
-      </div>
+      <SearchInput />
       {children}
     </section>
   );

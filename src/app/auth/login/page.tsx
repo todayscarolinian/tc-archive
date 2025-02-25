@@ -12,8 +12,10 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { signInWithGoogle } from "@/lib/firebase/auth";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
+  const router = useRouter();
   return (
     <section className="h-svh flex flex-col justify-center items-center gap-4">
       <div className="flex flex-col items-center gap-10 max-w-sm md:max-w-2xl lg:max-w-4xl">
@@ -31,7 +33,10 @@ export default function Login() {
           <CardFooter className="flex flex-col space-y-4 text-muted-foreground">
             <Button
               className="w-full bg-primary-500 hover:bg-primary-700 hover:cursor-pointer"
-              onClick={signInWithGoogle}
+              onClick={async () => {
+                await signInWithGoogle();
+                router.push("/");
+              }}
             >
               Login with Google
             </Button>

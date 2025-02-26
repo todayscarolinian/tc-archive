@@ -5,10 +5,17 @@ import { mockData } from "@/constants/browse-mock-data";
 import IssueDialog from "@/components/issue-dialog";
 import { AddIssuePayload, EditIssuePayload } from "@/lib/types/issues.types";
 import { useState } from "react";
+import { User } from "firebase/auth";
+import { onAuthStateChanged } from "@/lib/firebase/auth";
 
 const Folders = () => {
   const router = useRouter();
   const [issues, setIssues] = useState<EditIssuePayload[]>([]);
+  const [user, setUser] = useState<User | null>(null);
+
+  onAuthStateChanged((user) => {
+    setUser(user);
+  });
 
   console.log(issues);
 
@@ -35,7 +42,7 @@ const Folders = () => {
           <FolderOpen />
           <h1 className="text-lg font-bold">Folders</h1>
         </div>
-        <IssueDialog mode="add" onSubmit={handleAddIssue} />
+        {user && <IssueDialog mode="add" onSubmit={handleAddIssue} />}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {mockData.map((folder, idx) => (

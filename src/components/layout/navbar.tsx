@@ -20,10 +20,21 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useState } from "react";
+import { onAuthStateChanged, signOut } from "@/lib/firebase/auth";
+import { User } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
+
+  onAuthStateChanged((user) => {
+    setUser(user);
+  });
+
   return (
-    <header className="fixed w-full top-0 flex h-24 items-center justify-between gap-4 px-4 md:px-6">
+    <header className="fixed bg-[#F8F8F8] border-b w-full top-0 flex h-20 items-center justify-between gap-4 px-4 md:px-6">
       <nav className="hidden flex-col gap-6 font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-10">
         <Link href="/">
           <Image
@@ -140,32 +151,41 @@ export default function Navbar() {
         </SheetContent>
       </Sheet>
 
-      <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-        <div className="ml-auto flex-1 sm:flex-initial"></div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="secondary"
-              size="icon"
-              className="rounded-full cursor-pointer"
-            >
-              <Avatar>
-                <AvatarImage src="/default.png" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-              <span className="sr-only">Toggle user menu</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuItem>Support</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Logout</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+      {user && (
+        <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
+          <div className="ml-auto flex-1 sm:flex-initial"></div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="secondary"
+                size="icon"
+                className="rounded-full cursor-pointer"
+              >
+                <Avatar>
+                  <AvatarImage src="/default.png" />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+                <span className="sr-only">Toggle user menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem>Support</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={async () => {
+                  await signOut();
+                  router.push("/");
+                }}
+              >
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )}
     </header>
   );
 }

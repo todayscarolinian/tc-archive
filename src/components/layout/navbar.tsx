@@ -34,7 +34,7 @@ export default function Navbar() {
   });
 
   return (
-    <header className="fixed bg-[#F8F8F8] border-b w-full top-0 flex h-20 items-center justify-between gap-4 px-4 md:px-6">
+    <header className="fixed bg-[#F8F8F8] border-b w-full top-0 flex h-20 items-center justify-between gap-4 px-4 md:px-6 z-50">
       <nav className="hidden flex-col gap-6 font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-10">
         <Link href="/">
           <Image

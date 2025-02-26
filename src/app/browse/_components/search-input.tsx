@@ -99,7 +99,7 @@ const SearchInput = () => {
 
   // Process API data when you switch to real API
   const processApiData = (data: ApiResponse) => {
-    // Adapt this based on your actual API response structure
+    // Adapt this based on the actual API response structure
     return data.issues.map((issue) => ({
       ...issue,
       year: new Date(issue.lastModified).getFullYear(), // Extract year from date if not provided
@@ -189,7 +189,7 @@ const SearchInput = () => {
 
       setFilteredIssues(filtered);
       setShowResults(true);
-    }, 300); // 300ms debounce
+    }, 300);
 
     return () => clearTimeout(debouncedSearch);
   }, [searchQuery, allIssues]);
@@ -216,7 +216,6 @@ const SearchInput = () => {
 
   return (
     <div className="w-full max-w-lg mx-auto px-4 relative">
-      {/* Search bar */}
       <div className="w-full mb-2">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -239,8 +238,6 @@ const SearchInput = () => {
           )}
         </div>
       </div>
-
-      {/* Scrollable Results Area (Now Overlapping) */}
       {showResults && (
         <div className="absolute top-full left-0 w-full border rounded-md overflow-hidden bg-white shadow-lg z-50">
           {isLoading ? (
@@ -265,7 +262,6 @@ const SearchInput = () => {
                         Vol. {issue.volume}
                       </div>
                     </div>
-
                     {/* Content */}
                     <div className="flex-1">
                       <h3 className="font-medium text-base text-gray-900">

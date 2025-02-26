@@ -19,8 +19,10 @@ import { IssueType, mockData } from "@/constants/browse-mock-data";
 import { FileText, PenSquare, ArrowUp, ArrowDown } from "lucide-react";
 import { useState, useMemo } from "react";
 import { IssueTableProps } from "../_types/issue-table.types";
+import { mockUser } from "@/constants/user-mock-data";
 
 const IssueTable = ({ yearFolder }: IssueTableProps) => {
+  const { isAdmin } = mockUser; // mock data for now
   const columnHelper = createColumnHelper<IssueType>();
   const [sorting, setSorting] = useState<SortingState>([
     { id: "title", desc: false },
@@ -70,17 +72,21 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
       header: "Last Modified",
       enableSorting: true,
     }),
-    columnHelper.accessor("isAdmin", {
-      cell: (info) => (
-        <div>
-          <button className="p-2 bg-red-800 text-white rounded-md">
-            <PenSquare size={20} />
-          </button>
-        </div>
-      ),
-      header: "Action",
-      enableSorting: false,
-    }),
+    ...(isAdmin
+      ? [
+        columnHelper.accessor("isAdmin", {
+          cell: (info) => (
+            <div>
+              <button className="p-2 bg-red-800 text-white rounded-md">
+                <PenSquare size={20} />
+              </button>
+            </div>
+          ),
+          header: "Action",
+          enableSorting: false,
+        }),
+      ]
+      : []),
   ];
 
   const handleSortingChange = (columnId: string) => {

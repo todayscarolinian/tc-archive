@@ -35,9 +35,10 @@ interface ApiResponse {
  *    - Commented-out API fetch example for easy production transition
  *    - Data processing pipeline for API response normalization
  *
- * Note: Currently uses mock data with simulated API delay (300ms)
- *       Replace mockData with actual API call when backend is ready
+ * Note: Currently uses mock data with simulated API delay (300ms).
+ *       Replace mockData with actual API call when backend is ready.
  *       Code is congested for now, I am looking for ways to structure this better once backend is ready.
+ *       I am also looking on SWR library for data caching to be stored on browser memory rather than localStorage.
  */
 
 const SearchInput = () => {

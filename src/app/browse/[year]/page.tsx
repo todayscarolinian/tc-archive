@@ -5,6 +5,7 @@ import { use, useState } from "react";
 import IssueTable from "../_components/issue-table";
 import { User } from "firebase/auth";
 import { onAuthStateChanged } from "@/lib/firebase/auth";
+import IssueTableSkeleton from "../_components/issue-table-skeleton";
 
 interface PageProps {
   params: Promise<{ year: string }>;
@@ -19,6 +20,14 @@ export default function BrowsePage({ params }: PageProps) {
   });
 
   console.log(issues);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate initial data loading
+  useState(() => {
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+  });
 
   // // Simulated add issue function
   const handleAddIssue = async (data: AddIssuePayload) => {
@@ -51,9 +60,12 @@ export default function BrowsePage({ params }: PageProps) {
           )}
         </div>
       </div>
-      {/* TODO: Table for the issues below */}
       <div>
-        <IssueTable yearFolder={Number(year)} />
+        {isLoading ? (
+          <IssueTableSkeleton yearFolder={Number(year)} />
+        ) : (
+          <IssueTable yearFolder={Number(year)} />
+        )}
       </div>
     </div>
   );

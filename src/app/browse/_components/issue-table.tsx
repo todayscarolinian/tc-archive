@@ -17,11 +17,13 @@ import {
 } from "@/components/ui/table";
 import { IssueType, mockData } from "@/constants/browse-mock-data";
 import { FileText, ArrowUp, ArrowDown } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import IssueDialog from "@/components/issue-dialog";
 import { EditIssuePayload } from "@/lib/types/issues.types";
 import { User } from "firebase/auth";
 import { onAuthStateChanged } from "@/lib/firebase/auth";
+import { IssueTableColumnType } from "../_types/issue-table.types";
+import useIssues from "@/hooks/useIssues";
 
 interface IssueTableProps {
   yearFolder: number;
@@ -34,7 +36,7 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
     setUser(user);
   });
 
-  const columnHelper = createColumnHelper<IssueType>();
+  const columnHelper = createColumnHelper<IssueTableColumnType>();
   const [sorting, setSorting] = useState<SortingState>([
     { id: "title", desc: false },
   ]);
@@ -60,16 +62,7 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
     }
   };
 
-  const issues = useMemo(() => {
-    const folder = mockData.find((folder) => folder.year == yearFolder);
-
-    if (!folder) {
-      console.warn(`No folder found for year ${yearFolder}`);
-      return [];
-    }
-
-    return folder.issues || [];
-  }, [yearFolder]);
+  const issues = useIssues(mockData, yearFolder);
 
   //   helper to convert IssueType to EditIssuePayload
   const mapIssueToEditIssuePayload = (
@@ -89,6 +82,7 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
     issueNumber: 1,
     thumbnailLink: "",
     pdfLink: "",
+    lastModified: "",
   });
 
   const columns = [
@@ -124,23 +118,27 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
       header: "Last Modified",
       enableSorting: true,
     }),
-    columnHelper.accessor("isAdmin", {
-      cell: (info) => {
-        const editValues = mapIssueToEditIssuePayload(
-          info.row.original,
-          yearFolder
-        );
-        return (
-            <IssueDialog
-              mode="edit"
-              defaultValues={editValues}
-              onSubmit={handleEditIssue}
-            />
-        );
-      },
-      header: "Action",
-      enableSorting: false,
-    }),
+    ...(user
+      ? [
+          columnHelper.accessor("isAdmin", {
+            cell: (info) => {
+              const editValues = mapIssueToEditIssuePayload(
+                info.row.original,
+                yearFolder
+              );
+              return (
+                <IssueDialog
+                  mode="edit"
+                  defaultValues={editValues}
+                  onSubmit={handleEditIssue}
+                />
+              );
+            },
+            header: "Action",
+            enableSorting: false,
+          }),
+        ]
+      : []),
   ];
 
   const handleSortingChange = (columnId: string) => {

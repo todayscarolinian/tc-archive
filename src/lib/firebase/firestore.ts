@@ -102,15 +102,16 @@ export async function addIssue(issue: AddIssuePayload): Promise<string> {
  * 
  * @throws If there is an error when updating the issue in Firestore.
  * 
- * @returns A promise that resolves when the update is successful.
+ * @returns A promise that resolves to true when the update is successful, and false if otherwise.
  */
-export async function editIssue(issue: EditIssuePayload): Promise<void> {
+export async function editIssue(issue: EditIssuePayload): Promise<boolean> {
     try {
         await updateDoc(doc(db, "issues", issue.id), issue);
+        return true;
     }
     catch(error) {
         console.error("There was an error updating the issue: ", error);
-        throw error;
+        return false;
     }
 }
 
@@ -121,14 +122,15 @@ export async function editIssue(issue: EditIssuePayload): Promise<void> {
  * 
  * @throws If there is an error when deleting the issue from Firestore.
  * 
- * @returns A promise that resolves when the deletion is successful.
+ * @returns A promise that resolves to true when the deletion is successful, and false if otherwise.
  */
-export async function deleteIssue(issue: DeleteIssuePayload): Promise<void> {
+export async function deleteIssue(issue: DeleteIssuePayload): Promise<boolean> {
     try {
         await deleteDoc(doc(db, "issues", issue.id));
+        return true;
     }
     catch(error) {
         console.error("There was an error updating the issue: ", error);
-        throw error;
+        return false;
     }
 }

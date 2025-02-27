@@ -9,7 +9,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { mockData } from "@/constants/browse-mock-data";
-import { useMemo } from "react";
 import { IssueTableProps } from "../_types/issue-table.types";
 import { mockUser } from "@/constants/user-mock-data";
 import useIssues from "@/hooks/useIssues";

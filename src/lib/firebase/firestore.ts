@@ -1,17 +1,25 @@
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "./clientApp";
+import { EditIssuePayload, EditIssueSchema } from "../types/issues.types";
+
 
 /**
- * Retrieves all issues from the "issues" collection in the Firestore.
+ * Retrieves all issues from the Firestore database.
  *
- * @throws If there is an error when retrieving the issues from Firestore.
- *
- * @returns An array of all issues in the Firestore.
+ * @returns A promise that resolves to an array of {@link EditIssuePayload} objects, or rejects with an error if there was a problem fetching the issues.
  */
-export async function getIssues() {
+export async function getIssues(): Promise<EditIssuePayload[]> {
     try {
         const issuesSnapshot = await getDocs(collection(db, "issues"));
-        const issues = issuesSnapshot.docs.map((doc) => doc.data());
+        const documentIssues = issuesSnapshot.docs.map((doc) => doc.data());
+
+        // Convert DocumentData[] to EditIssuePayload[]
+        const issues: EditIssuePayload[] = documentIssues
+            .map((issue) => {
+                const parsed = EditIssueSchema.safeParse(issue);
+                return parsed.success ? parsed.data : null;
+            })
+            .filter((issue): issue is EditIssuePayload => issue !== null);
 
         return issues;
     } catch (error) {

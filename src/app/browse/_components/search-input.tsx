@@ -75,14 +75,11 @@ const SearchInput = () => {
 
       // For now, process mock data with a slight delay to simulate API call
       await new Promise((resolve) => setTimeout(resolve, 300));
-      const flattenedIssues = mockData.reduce((acc, folder) => {
-        const issuesWithYear = folder.issues.map((issue) => ({
-          ...issue,
-          year: folder.year,
-        }));
-        return [...acc, ...issuesWithYear];
-      }, [] as (IssueType & { year: number })[]);
-
+      const flattenedIssues = mockData.map((issue) => ({
+        ...issue,
+        year: issue.publicationYear, // Use publicationYear as year
+      }));
+      
       // Cache the flattened data
       cacheData(flattenedIssues);
       setAllIssues(flattenedIssues);

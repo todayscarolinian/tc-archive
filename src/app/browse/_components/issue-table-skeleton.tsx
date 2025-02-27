@@ -12,19 +12,11 @@ import { mockData } from "@/constants/browse-mock-data";
 import { useMemo } from "react";
 import { IssueTableProps } from "../_types/issue-table.types";
 import { mockUser } from "@/constants/user-mock-data";
+import useIssues from "@/hooks/useIssues";
 
 const IssueTableSkeleton = ({ yearFolder }: IssueTableProps) => {
   const { isAdmin } = mockUser
-  const issues = useMemo(() => {
-    const folder = mockData.find((folder) => folder.year == yearFolder);
-
-    if (!folder) {
-      console.warn(`No folder found for year ${yearFolder}`);
-      return [];
-    }
-
-    return folder.issues || [];
-  }, [yearFolder]);
+  const issues = useIssues(mockData, yearFolder)
 
   /* 
     Admin user: Constant 6 columns (Name, Publisher, Volume, Category, Last Modified, Action)

@@ -15,29 +15,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { IssueType, mockData } from "@/constants/browse-mock-data";
 import { FileText, PenSquare, ArrowUp, ArrowDown } from "lucide-react";
-import { useState, useMemo } from "react";
-import { IssueTableProps } from "../_types/issue-table.types";
+import { useState } from "react";
+import { IssueTableProps, IssueTableColumnType } from "../_types/issue-table.types";
 import { mockUser } from "@/constants/user-mock-data";
+import { mockData } from "@/constants/browse-mock-data";
+import useIssues from "@/hooks/useIssues";
 
 const IssueTable = ({ yearFolder }: IssueTableProps) => {
   const { isAdmin } = mockUser; // mock data for now
-  const columnHelper = createColumnHelper<IssueType>();
+  const columnHelper = createColumnHelper<IssueTableColumnType>();
   const [sorting, setSorting] = useState<SortingState>([
     { id: "title", desc: false },
   ]);
-
-  const issues = useMemo(() => {
-    const folder = mockData.find((folder) => folder.year == yearFolder);
-
-    if (!folder) {
-      console.warn(`No folder found for year ${yearFolder}`);
-      return [];
-    }
-
-    return folder.issues || [];
-  }, [yearFolder]);
+  const issues = useIssues(mockData, yearFolder)
 
   const columns = [
     columnHelper.accessor("title", {
@@ -122,8 +113,8 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
                 <TableHead
                   key={header.id}
                   className={`px-6 py-3 text-left text-sm font-medium text-gray-500 ${index === 0
-                      ? "w-2xl max-w-2xl truncate whitespace-nowrap"
-                      : ""
+                    ? "w-2xl max-w-2xl truncate whitespace-nowrap"
+                    : ""
                     }`}
                   onClick={
                     header.column.getCanSort()
@@ -166,8 +157,8 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
                   <TableCell
                     key={cell.id}
                     className={`px-6 py-3 text-left text-sm font-medium text-gray-500 ${index === 0
-                        ? "w-2xl max-w-2xl truncate whitespace-nowrap"
-                        : ""
+                      ? "w-2xl max-w-2xl truncate whitespace-nowrap"
+                      : ""
                       }`}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

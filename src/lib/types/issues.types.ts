@@ -66,9 +66,9 @@ export const AddIssueSchema = z.object({
 });
 
 export const EditIssueSchema = z.object({
-    id: z.number({
+    id: z.string({
         required_error: "id is required",
-        invalid_type_error: "id must be a number",
+        invalid_type_error: "id must be a string",
     }),
     title: z
         .string({
@@ -135,9 +135,9 @@ export const EditIssueSchema = z.object({
 });
 
 export const DeleteIssueSchema = z.object({
-    id: z.number({
+    id: z.string({
         required_error: "id is required",
-        invalid_type_error: "id must be a number",
+        invalid_type_error: "id must be a string",
     }),
 });
 

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useState, useEffect } from "react";
 import Recents from "./_components/recent-files";
 import Folders from "./_components/folders";

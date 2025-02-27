@@ -35,9 +35,10 @@ interface ApiResponse {
  *    - Commented-out API fetch example for easy production transition
  *    - Data processing pipeline for API response normalization
  *
- * Note: Currently uses mock data with simulated API delay (300ms)
- *       Replace mockData with actual API call when backend is ready
+ * Note: Currently uses mock data with simulated API delay (300ms).
+ *       Replace mockData with actual API call when backend is ready.
  *       Code is congested for now, I am looking for ways to structure this better once backend is ready.
+ *       I am also looking on SWR library for data caching to be stored on browser memory rather than localStorage.
  */
 
 const SearchInput = () => {
@@ -74,14 +75,11 @@ const SearchInput = () => {
 
       // For now, process mock data with a slight delay to simulate API call
       await new Promise((resolve) => setTimeout(resolve, 300));
-      const flattenedIssues = mockData.reduce((acc, folder) => {
-        const issuesWithYear = folder.issues.map((issue) => ({
-          ...issue,
-          year: folder.year,
-        }));
-        return [...acc, ...issuesWithYear];
-      }, [] as (IssueType & { year: number })[]);
-
+      const flattenedIssues = mockData.map((issue) => ({
+        ...issue,
+        year: issue.publicationYear, // Use publicationYear as year
+      }));
+      
       // Cache the flattened data
       cacheData(flattenedIssues);
       setAllIssues(flattenedIssues);
@@ -99,7 +97,7 @@ const SearchInput = () => {
 
   // Process API data when you switch to real API
   const processApiData = (data: ApiResponse) => {
-    // Adapt this based on your actual API response structure
+    // Adapt this based on the actual API response structure
     return data.issues.map((issue) => ({
       ...issue,
       year: new Date(issue.lastModified).getFullYear(), // Extract year from date if not provided
@@ -189,7 +187,7 @@ const SearchInput = () => {
 
       setFilteredIssues(filtered);
       setShowResults(true);
-    }, 300); // 300ms debounce
+    }, 300);
 
     return () => clearTimeout(debouncedSearch);
   }, [searchQuery, allIssues]);
@@ -216,7 +214,6 @@ const SearchInput = () => {
 
   return (
     <div className="w-full max-w-lg mx-auto px-4 relative">
-      {/* Search bar */}
       <div className="w-full mb-2">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -239,8 +236,6 @@ const SearchInput = () => {
           )}
         </div>
       </div>
-
-      {/* Scrollable Results Area (Now Overlapping) */}
       {showResults && (
         <div className="absolute top-full left-0 w-full border rounded-md overflow-hidden bg-white shadow-lg z-50">
           {isLoading ? (
@@ -265,7 +260,6 @@ const SearchInput = () => {
                         Vol. {issue.volume}
                       </div>
                     </div>
-
                     {/* Content */}
                     <div className="flex-1">
                       <h3 className="font-medium text-base text-gray-900">

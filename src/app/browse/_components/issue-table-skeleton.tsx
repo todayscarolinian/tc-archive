@@ -9,21 +9,26 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { mockData } from "@/constants/browse-mock-data";
-import { useMemo } from "react";
 import { IssueTableProps } from "../_types/issue-table.types";
+import useIssues from "@/hooks/useIssues";
+import { useState } from "react";
+import { User } from "firebase/auth";
+import { onAuthStateChanged } from "@/lib/firebase/auth";
 
 const IssueTableSkeleton = ({ yearFolder }: IssueTableProps) => {
-  const issues = useMemo(() => {
-    const folder = mockData.find((folder) => folder.year == yearFolder);
+  const [user, setUser] = useState<User | null>(null);
 
-    if (!folder) {
-      console.warn(`No folder found for year ${yearFolder}`);
-      return [];
-    }
+  onAuthStateChanged((user) => {
+    setUser(user);
+  });
+  const issues = useIssues(mockData, yearFolder);
 
-    return folder.issues || [];
-  }, [yearFolder]);
-  const skeletonColumns = Array.from({ length: 6 }); // Constant 6 columns (Name, Publisher, Volume, Category, Last Modified, Action)
+  /* 
+    Admin user: Constant 6 columns (Name, Publisher, Volume, Category, Last Modified, Action)
+    Constant 5 columns if not admin (Name, Publisher, Volume, Category, Last Modified)
+  */
+  const columnCount = user ? 6 : 5;
+  const skeletonColumns = Array.from({ length: columnCount });
 
   return (
     <div className="overflow-auto border border-gray-200 rounded-lg">
@@ -62,7 +67,7 @@ const IssueTableSkeleton = ({ yearFolder }: IssueTableProps) => {
                       <Skeleton className="h-9 w-9 rounded-xl" />
                       <Skeleton className="h-4 w-32" />
                     </div>
-                  ) : colIndex === 5 ? (
+                  ) : colIndex === 5 && user ? (
                     <Skeleton className="h-9 w-9 rounded-md" />
                   ) : (
                     <Skeleton className="h-4 w-24" />

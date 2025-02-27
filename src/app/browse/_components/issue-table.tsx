@@ -15,14 +15,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { IssueType, mockData } from "@/constants/browse-mock-data";
 import { FileText, ArrowUp, ArrowDown } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import IssueDialog from "@/components/issue-dialog";
 import { EditIssuePayload } from "@/lib/types/issues.types";
 import { User } from "firebase/auth";
 import { onAuthStateChanged } from "@/lib/firebase/auth";
-import { IssueTableProps } from "../_types/issue-table.types";
+import {
+  IssueTableProps,
+  IssueTableColumnType,
+} from "../_types/issue-table.types";
+import { IssueType, mockData } from "@/constants/browse-mock-data";
+import useIssues from "@/hooks/useIssues";
 
 const IssueTable = ({ yearFolder }: IssueTableProps) => {
   const [user, setUser] = useState<User | null>(null);
@@ -31,10 +35,13 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
     setUser(user);
   });
 
-  const columnHelper = createColumnHelper<IssueType>();
+  const columnHelper = createColumnHelper<IssueTableColumnType>();
   const [sorting, setSorting] = useState<SortingState>([
     { id: "title", desc: false },
   ]);
+
+  const issues = useIssues(mockData, yearFolder);
+
   const [editIssue, setEditIssue] = useState<EditIssuePayload[]>([]);
 
   console.log(editIssue);
@@ -57,18 +64,6 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
     }
   };
 
-  const issues = useMemo(() => {
-    const folder = mockData.find((folder) => folder.year == yearFolder);
-
-    if (!folder) {
-      console.warn(`No folder found for year ${yearFolder}`);
-      return [];
-    }
-
-    return folder.issues || [];
-  }, [yearFolder]);
-
-  //   helper to convert IssueType to EditIssuePayload
   const mapIssueToEditIssuePayload = (
     issue: IssueType,
     yearFolder: number
@@ -121,23 +116,27 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
       header: "Last Modified",
       enableSorting: true,
     }),
-    columnHelper.accessor("isAdmin", {
-      cell: (info) => {
-        const editValues = mapIssueToEditIssuePayload(
-          info.row.original,
-          yearFolder
-        );
-        return (
-            <IssueDialog
-              mode="edit"
-              defaultValues={editValues}
-              onSubmit={handleEditIssue}
-            />
-        );
-      },
-      header: "Action",
-      enableSorting: false,
-    }),
+    ...(user
+        ? [
+          columnHelper.accessor("isAdmin", {
+            cell: (info) => {
+                const editValues = mapIssueToEditIssuePayload(
+                  info.row.original,
+                  yearFolder
+                );
+                return (
+                    <IssueDialog
+                      mode="edit"
+                      defaultValues={editValues}
+                      onSubmit={handleEditIssue}
+                    />
+                );
+              },
+            header: "Action",
+            enableSorting: false,
+          }),
+        ]
+        : []),
   ];
 
   const handleSortingChange = (columnId: string) => {

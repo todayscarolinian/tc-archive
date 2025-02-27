@@ -1,12 +1,10 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { mockData } from "@/constants/browse-mock-data";
+import useRecentIssues from "@/hooks/useRecentIssues";
 import { Dot } from "lucide-react";
 
 const RecentFilesSkeleton = () => {
-  const recentIssues = mockData
-    .flatMap((folder) => folder.issues)
-    .sort((a, b) => new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime())
-    .slice(0, 4);
+  const recentIssues = useRecentIssues(mockData)
 
   return (
     <section className="space-y-6">

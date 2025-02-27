@@ -15,20 +15,75 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { FileText, PenSquare, ArrowUp, ArrowDown } from "lucide-react";
+import { IssueType, mockData } from "@/constants/browse-mock-data";
+import { FileText, ArrowUp, ArrowDown } from "lucide-react";
 import { useState } from "react";
-import { IssueTableProps, IssueTableColumnType } from "../_types/issue-table.types";
-import { mockUser } from "@/constants/user-mock-data";
-import { mockData } from "@/constants/browse-mock-data";
+import IssueDialog from "@/components/issue-dialog";
+import { EditIssuePayload } from "@/lib/types/issues.types";
+import { User } from "firebase/auth";
+import { onAuthStateChanged } from "@/lib/firebase/auth";
+import { IssueTableColumnType } from "../_types/issue-table.types";
 import useIssues from "@/hooks/useIssues";
 
+interface IssueTableProps {
+  yearFolder: number;
+}
+
 const IssueTable = ({ yearFolder }: IssueTableProps) => {
-  const { isAdmin } = mockUser; // mock data for now
+  const [user, setUser] = useState<User | null>(null);
+
+  onAuthStateChanged((user) => {
+    setUser(user);
+  });
+
   const columnHelper = createColumnHelper<IssueTableColumnType>();
   const [sorting, setSorting] = useState<SortingState>([
     { id: "title", desc: false },
   ]);
-  const issues = useIssues(mockData, yearFolder)
+  const [editIssue, setEditIssue] = useState<EditIssuePayload[]>([]);
+
+  console.log(editIssue);
+
+  // Simulated edit issue function
+  const handleEditIssue = async (data: EditIssuePayload) => {
+    try {
+      // Simulate API call delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Update issue in state
+      setEditIssue((prev) =>
+        prev.map((issue) => (issue.id === data.id ? data : issue))
+      );
+
+      console.log("Issue updated successfully");
+    } catch (error) {
+      console.error(error);
+      console.log("Failed to update issue");
+    }
+  };
+
+  const issues = useIssues(mockData, yearFolder);
+
+  //   helper to convert IssueType to EditIssuePayload
+  const mapIssueToEditIssuePayload = (
+    issue: IssueType,
+    yearFolder: number
+  ): EditIssuePayload => ({
+    id: 0,
+    title: issue.title,
+    publisher: issue.publisher,
+    volume: issue.volume,
+    category: issue.category as
+      | "Magazine"
+      | "Newsletter"
+      | "Photobook"
+      | "Miscellaneous",
+    publicationYear: yearFolder,
+    issueNumber: 1,
+    thumbnailLink: "",
+    pdfLink: "",
+    lastModified: "",
+  });
 
   const columns = [
     columnHelper.accessor("title", {
@@ -63,20 +118,26 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
       header: "Last Modified",
       enableSorting: true,
     }),
-    ...(isAdmin
+    ...(user
       ? [
-        columnHelper.accessor("isAdmin", {
-          cell: (info) => (
-            <div>
-              <button className="p-2 bg-red-800 text-white rounded-md">
-                <PenSquare size={20} />
-              </button>
-            </div>
-          ),
-          header: "Action",
-          enableSorting: false,
-        }),
-      ]
+          columnHelper.accessor("isAdmin", {
+            cell: (info) => {
+              const editValues = mapIssueToEditIssuePayload(
+                info.row.original,
+                yearFolder
+              );
+              return (
+                <IssueDialog
+                  mode="edit"
+                  defaultValues={editValues}
+                  onSubmit={handleEditIssue}
+                />
+              );
+            },
+            header: "Action",
+            enableSorting: false,
+          }),
+        ]
       : []),
   ];
 
@@ -112,10 +173,11 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
               {headerGroup.headers.map((header, index) => (
                 <TableHead
                   key={header.id}
-                  className={`px-6 py-3 text-left text-sm font-medium text-gray-500 ${index === 0
-                    ? "w-2xl max-w-2xl truncate whitespace-nowrap"
-                    : ""
-                    }`}
+                  className={`px-6 py-3 text-left text-sm font-medium text-gray-500 ${
+                    index === 0
+                      ? "w-2xl max-w-2xl truncate whitespace-nowrap"
+                      : ""
+                  }`}
                   onClick={
                     header.column.getCanSort()
                       ? () => handleSortingChange(header.column.id)
@@ -156,10 +218,11 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
                 {row.getVisibleCells().map((cell, index) => (
                   <TableCell
                     key={cell.id}
-                    className={`px-6 py-3 text-left text-sm font-medium text-gray-500 ${index === 0
-                      ? "w-2xl max-w-2xl truncate whitespace-nowrap"
-                      : ""
-                      }`}
+                    className={`px-6 py-3 text-left text-sm font-medium text-gray-500 ${
+                      index === 0
+                        ? "w-2xl max-w-2xl truncate whitespace-nowrap"
+                        : ""
+                    }`}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>

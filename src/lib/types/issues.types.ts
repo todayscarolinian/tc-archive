@@ -50,7 +50,13 @@ export const AddIssueSchema = z.object({
             required_error: "pdfLink is required",
             invalid_type_error: "pdfLink must be a string",
         })
-        .min(1, "pdfLink cannot be emptpy"),
+        .min(1, "pdfLink cannot be empty"),
+    lastModified: z
+        .string({
+            required_error: "pdfLink is required",
+            invalid_type_error: "pdfLink must be a string",
+        })
+        .min(1, "pdfLink cannot be empty"),
 });
 
 export const EditIssueSchema = z.object({
@@ -107,7 +113,13 @@ export const EditIssueSchema = z.object({
             required_error: "pdfLink is required",
             invalid_type_error: "pdfLink must be a string",
         })
-        .min(1, "pdfLink cannot be emptpy"),
+        .min(1, "pdfLink cannot be empty"),
+    lastModified: z
+        .string({
+            required_error: "pdfLink is required",
+            invalid_type_error: "pdfLink must be a string",
+        })
+        .min(1, "pdfLink cannot be empty"),
 });
 
 export const DeleteIssueSchema = z.object({

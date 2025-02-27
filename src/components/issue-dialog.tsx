@@ -12,7 +12,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -35,13 +34,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { Pencil, Plus, Upload } from "lucide-react";
+import { FileText, Pencil, Plus, Upload } from "lucide-react";
+import Image from "next/image";
 
 interface IssueDialogProps {
   mode: "add" | "edit";
   defaultValues?: EditIssuePayload;
-  onSubmit: (data: AddIssuePayload | EditIssuePayload) => Promise<void>;
+  onSubmit: (data: EditIssuePayload) => Promise<void>;
   yearFromRoute?: string;
+  //   issueData?: EditIssuePayload;
 }
 
 export default function IssueDialog({
@@ -49,45 +50,41 @@ export default function IssueDialog({
   defaultValues,
   onSubmit,
   yearFromRoute,
-}: IssueDialogProps) {
+}: //   issueData,
+IssueDialogProps) {
   const [open, setOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
-  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
 
   const form = useForm<AddIssuePayload | EditIssuePayload>({
     resolver: zodResolver(mode === "add" ? AddIssueSchema : EditIssueSchema),
-    defaultValues: defaultValues || {
-      title: "",
-      publisher: "",
-      publicationYear: yearFromRoute
-        ? parseInt(yearFromRoute)
-        : new Date().getFullYear(),
-      volume: 1,
-      issueNumber: 1,
-      category: "Magazine",
-      thumbnailLink: "",
-      pdfLink: "",
-    },
+    defaultValues:
+      mode === "add"
+        ? {
+            title: "",
+            publisher: "",
+            publicationYear: yearFromRoute
+              ? parseInt(yearFromRoute)
+              : new Date().getFullYear(),
+            volume: 1,
+            issueNumber: 1,
+            category: "Magazine" as const,
+            thumbnailLink: "",
+            pdfLink: "",
+          }
+        : defaultValues,
   });
-
-  const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) {
-      setThumbnailFile(e.target.files[0]);
-      form.setValue("thumbnailLink", e.target.files[0].name);
-    }
-  };
-
-  const handlePdfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) {
-      setPdfFile(e.target.files[0]);
-      form.setValue("pdfLink", e.target.files[0].name);
-    }
-  };
 
   async function handleSubmit(data: AddIssuePayload | EditIssuePayload) {
     try {
-      await onSubmit(data);
+      if (mode === "add") {
+        const transformedData: EditIssuePayload = {
+          id: 0,
+          ...(data as AddIssuePayload),
+        };
+        await onSubmit(transformedData);
+      } else {
+        await onSubmit(data as EditIssuePayload);
+      }
       setOpen(false);
       form.reset();
     } catch (error) {
@@ -272,7 +269,11 @@ export default function IssueDialog({
                           type="file"
                           accept="image/*"
                           className="hidden"
-                          onChange={handleThumbnailChange}
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              field.onChange(e.target.files[0]);
+                            }
+                          }}
                         />
                         <Button
                           type="button"
@@ -284,8 +285,27 @@ export default function IssueDialog({
                         >
                           Upload File <Upload className="h-4 w-4" />
                         </Button>
-                        {thumbnailFile && (
-                          <span className="text-sm">{thumbnailFile.name}</span>
+
+                        {field.value && (
+                          <div className="flex items-center gap-2">
+                            {typeof field.value === "string" ? (
+                              <Image
+                                src={field.value}
+                                alt="Thumbnail preview"
+                                width={64}
+                                height={64}
+                                className="w-16 h-16 rounded-md object-cover border"
+                              />
+                            ) : (
+                              <Image
+                                src={URL.createObjectURL(field.value)}
+                                alt="Thumbnail preview"
+                                width={64}
+                                height={64}
+                                className="w-16 h-16 rounded-md object-cover border"
+                              />
+                            )}
+                          </div>
                         )}
                       </div>
                     </FormControl>
@@ -293,6 +313,7 @@ export default function IssueDialog({
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="pdfLink"
@@ -309,7 +330,11 @@ export default function IssueDialog({
                           type="file"
                           accept=".pdf"
                           className="hidden"
-                          onChange={handlePdfChange}
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              field.onChange(e.target.files[0]);
+                            }
+                          }}
                         />
                         <Button
                           type="button"
@@ -321,8 +346,16 @@ export default function IssueDialog({
                         >
                           Upload File <Upload className="h-4 w-4" />
                         </Button>
-                        {pdfFile && (
-                          <span className="text-sm">{pdfFile.name}</span>
+
+                        {field.value && (
+                          <div className="flex items-center gap-2 p-2 border rounded-md">
+                            <FileText className="h-6 w-6 text-primary-500" />
+                            <span className="text-sm">
+                              {typeof field.value === "string"
+                                ? field.value.split("/").pop()
+                                : (field.value as File).name}
+                            </span>
+                          </div>
                         )}
                       </div>
                     </FormControl>

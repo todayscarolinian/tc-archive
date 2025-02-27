@@ -1,12 +1,41 @@
-"use client"
-import { Button } from "@/components/ui/button";
-import { Plus, Dot, FolderOpen } from "lucide-react";
+"use client";
+import { Dot, FolderOpen } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { mockData } from "@/constants/browse-mock-data";
 import useGroupedIssues from "@/hooks/useGroupedIssuesByYear";
+import IssueDialog from "@/components/issue-dialog";
+import { AddIssuePayload, EditIssuePayload } from "@/lib/types/issues.types";
+import { useState } from "react";
+import { User } from "firebase/auth";
+import { onAuthStateChanged } from "@/lib/firebase/auth";
 
 const Folders = () => {
-  const router = useRouter()
+  const router = useRouter();
+  const [issues, setIssues] = useState<EditIssuePayload[]>([]);
+  const [user, setUser] = useState<User | null>(null);
+
+  onAuthStateChanged((user) => {
+    setUser(user);
+  });
+
+  console.log(issues);
+
+  // Simulated add issue function
+  const handleAddIssue = async (data: AddIssuePayload) => {
+    try {
+      // Simulate API call delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Add new issue to state with a mock ID
+      setIssues((prev) => [...prev, { ...data, id: prev.length + 1 }]);
+
+      console.log("Issue added successfully");
+    } catch (error) {
+      console.error(error);
+      console.log("Failed to add issue");
+    }
+  };
+
   // Group issues by publication year
   const yearFolders = useGroupedIssues(mockData)
 
@@ -17,10 +46,7 @@ const Folders = () => {
           <FolderOpen />
           <h1 className="text-lg font-bold">Folders</h1>
         </div>
-        <Button className="bg-[#9B2626]">
-            <Plus />
-            Add Issues
-        </Button>
+        {user && <IssueDialog mode="add" onSubmit={handleAddIssue} />}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {/* Simulate: only display year with existing issues */}

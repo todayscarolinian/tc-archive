@@ -20,6 +20,8 @@ export default function BrowsePage({ params }: PageProps) {
   onAuthStateChanged((user) => {
     setUser(user);
   });
+
+  console.log(issues);
   const [isLoading, setIsLoading] = useState(true);
 
   // Simulate initial data loading
@@ -28,8 +30,6 @@ export default function BrowsePage({ params }: PageProps) {
       setIsLoading(false);
     }, 1000);
   });
-
-  console.log(issues);
 
   // // Simulated add issue function
   const handleAddIssue = async (data: AddIssuePayload) => {

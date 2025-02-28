@@ -30,7 +30,7 @@ const Folders = () => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Add new issue to state with a mock ID
-      setIssues((prev) => [...prev, { ...data, id: prev.length + 1 }]);
+      setIssues((prev) => [...prev, { ...data, id: String(prev.length + 1) }]);
 
       console.log("Issue added successfully");
     } catch (error) {

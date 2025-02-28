@@ -79,7 +79,7 @@ const SearchInput = () => {
         ...issue,
         year: issue.publicationYear, // Use publicationYear as year
       }));
-      
+
       // Cache the flattened data
       cacheData(flattenedIssues);
       setAllIssues(flattenedIssues);
@@ -96,6 +96,7 @@ const SearchInput = () => {
   }, []);
 
   // Process API data when you switch to real API
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const processApiData = (data: ApiResponse) => {
     // Adapt this based on the actual API response structure
     return data.issues.map((issue) => ({

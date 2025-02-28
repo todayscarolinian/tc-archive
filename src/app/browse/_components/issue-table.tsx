@@ -15,18 +15,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { IssueType, mockData } from "@/constants/browse-mock-data";
 import { FileText, ArrowUp, ArrowDown } from "lucide-react";
 import { useState } from "react";
 import IssueDialog from "@/components/issue-dialog";
 import { EditIssuePayload } from "@/lib/types/issues.types";
 import { User } from "firebase/auth";
 import { onAuthStateChanged } from "@/lib/firebase/auth";
-import {
-  IssueTableProps,
-  IssueTableColumnType,
-} from "../_types/issue-table.types";
-import { IssueType, mockData } from "@/constants/browse-mock-data";
+import { IssueTableColumnType } from "../_types/issue-table.types";
 import useIssues from "@/hooks/useIssues";
+
+interface IssueTableProps {
+  yearFolder: number;
+}
 
 const IssueTable = ({ yearFolder }: IssueTableProps) => {
   const [user, setUser] = useState<User | null>(null);
@@ -64,11 +65,12 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
     }
   };
 
+  //   helper to convert IssueType to EditIssuePayload
   const mapIssueToEditIssuePayload = (
     issue: IssueType,
     yearFolder: number
   ): EditIssuePayload => ({
-    id: 0,
+    id: String(0),
     title: issue.title,
     publisher: issue.publisher,
     volume: issue.volume,
@@ -81,6 +83,8 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
     issueNumber: 1,
     thumbnailLink: "",
     pdfLink: "",
+    lastModified: "",
+    createdBy: "",
   });
 
   const columns = [
@@ -117,26 +121,26 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
       enableSorting: true,
     }),
     ...(user
-        ? [
+      ? [
           columnHelper.accessor("isAdmin", {
             cell: (info) => {
-                const editValues = mapIssueToEditIssuePayload(
-                  info.row.original,
-                  yearFolder
-                );
-                return (
-                    <IssueDialog
-                      mode="edit"
-                      defaultValues={editValues}
-                      onSubmit={handleEditIssue}
-                    />
-                );
-              },
+              const editValues = mapIssueToEditIssuePayload(
+                info.row.original,
+                yearFolder
+              );
+              return (
+                <IssueDialog
+                  mode="edit"
+                  defaultValues={editValues}
+                  onSubmit={handleEditIssue}
+                />
+              );
+            },
             header: "Action",
             enableSorting: false,
           }),
         ]
-        : []),
+      : []),
   ];
 
   const handleSortingChange = (columnId: string) => {

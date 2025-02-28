@@ -6,7 +6,7 @@ import IssueTable from "../_components/issue-table";
 import { User } from "firebase/auth";
 import { onAuthStateChanged } from "@/lib/firebase/auth";
 import IssueTableSkeleton from "../_components/issue-table-skeleton";
-import { getIssues } from "@/lib/firebase/firestore";
+import { getIssuesByYear } from "@/lib/firebase/firestore";
 
 interface PageProps {
   params: Promise<{ year: string }>;
@@ -25,7 +25,7 @@ export default function BrowsePage({ params }: PageProps) {
   // Simulate initial data loading
   useState(() => {
     async function fetchIssues() {
-      await getIssues()
+      await getIssuesByYear(Number(year))
         .then((issues) => {
           setIssues(issues);
         })
@@ -74,9 +74,9 @@ export default function BrowsePage({ params }: PageProps) {
       </div>
       <div>
         {isLoading ? (
-          <IssueTableSkeleton data={issues} yearFolder={Number(year)} />
+          <IssueTableSkeleton issues={issues} yearFolder={Number(year)} />
         ) : (
-          <IssueTable data={issues} yearFolder={Number(year)} />
+          <IssueTable issues={issues} yearFolder={Number(year)} />
         )}
       </div>
     </div>

@@ -25,9 +25,8 @@ import {
   IssueTableColumnType,
   IssueTableProps,
 } from "../_types/issue-table.types";
-import useIssues from "@/hooks/useIssues";
 
-const IssueTable = ({ data, yearFolder }: IssueTableProps) => {
+const IssueTable = ({ issues, yearFolder }: IssueTableProps) => {
   const [user, setUser] = useState<User | null>(null);
 
   onAuthStateChanged((user) => {
@@ -38,8 +37,6 @@ const IssueTable = ({ data, yearFolder }: IssueTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "title", desc: false },
   ]);
-
-  const issues = useIssues(data, yearFolder);
 
   const [editIssue, setEditIssue] = useState<EditIssuePayload[]>([]);
 

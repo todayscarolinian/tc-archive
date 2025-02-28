@@ -9,18 +9,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { IssueTableProps } from "../_types/issue-table.types";
-import useIssues from "@/hooks/useIssues";
 import { useState } from "react";
 import { User } from "firebase/auth";
 import { onAuthStateChanged } from "@/lib/firebase/auth";
 
-const IssueTableSkeleton = ({ data, yearFolder }: IssueTableProps) => {
+const IssueTableSkeleton = ({ issues }: IssueTableProps) => {
   const [user, setUser] = useState<User | null>(null);
 
   onAuthStateChanged((user) => {
     setUser(user);
   });
-  const issues = useIssues(data, yearFolder);
 
   /* 
     Admin user: Constant 6 columns (Name, Publisher, Volume, Category, Last Modified, Action)

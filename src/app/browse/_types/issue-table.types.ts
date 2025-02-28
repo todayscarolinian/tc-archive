@@ -1,8 +1,8 @@
 import { EditIssuePayload } from "@/lib/types/issues.types";
 
 export interface IssueTableProps {
-    data: EditIssuePayload[],
-    yearFolder: number;
+    issues: EditIssuePayload[],
+    yearFolder?: number;
 }
 
 // Types for the issue table columns

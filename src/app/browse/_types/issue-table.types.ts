@@ -1,10 +1,13 @@
+import { EditIssuePayload } from "@/lib/types/issues.types";
+
 export interface IssueTableProps {
+    data: EditIssuePayload[],
     yearFolder: number;
 }
 
 // Types for the issue table columns
 export type IssueTableColumnType = {
-    id: number
+    id: string
     title: string
     publisher: string
     publicationYear: number
@@ -17,5 +20,6 @@ export type IssueTableColumnType = {
     thumbnailLink: string
     pdfLink: string
     lastModified: string
-    isAdmin?: boolean
+    isAdmin?: boolean,
+    createdBy: string
 }

@@ -1,14 +1,9 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Input } from "@/components/ui/input";
-import { mockData, IssueType } from "@/constants/browse-mock-data";
 import { Search, X } from "lucide-react";
-
-// You'll define this interface for your API response later
-interface ApiResponse {
-  issues: IssueType[];
-  // Add other fields that might come from your API
-}
+import { getIssues } from "@/lib/firebase/firestore";
+import { EditIssuePayload } from "@/lib/types/issues.types";
 
 /*
  * SearchInput Component
@@ -43,11 +38,11 @@ interface ApiResponse {
 
 const SearchInput = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [allIssues, setAllIssues] = useState<(IssueType & { year: number })[]>(
+  const [allIssues, setAllIssues] = useState<(EditIssuePayload & { year: number })[]>(
     []
   );
   const [filteredIssues, setFilteredIssues] = useState<
-    (IssueType & { year: number })[]
+    (EditIssuePayload & { year: number })[]
   >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showResults, setShowResults] = useState(false);
@@ -64,21 +59,9 @@ const SearchInput = () => {
 
     try {
       // When ready to switch to API, uncomment this block:
-      /*
-      const response = await fetch('/api/issues');
-      if (!response.ok) {
-        throw new Error('Failed to fetch issues');
-      }
-      const data: ApiResponse = await response.json();
-      const flattenedIssues = processApiData(data);
-      */
 
-      // For now, process mock data with a slight delay to simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      const flattenedIssues = mockData.map((issue) => ({
-        ...issue,
-        year: issue.publicationYear, // Use publicationYear as year
-      }));
+      const data = await getIssues();
+      const flattenedIssues = processApiData(data);
 
       // Cache the flattened data
       cacheData(flattenedIssues);
@@ -96,17 +79,16 @@ const SearchInput = () => {
   }, []);
 
   // Process API data when you switch to real API
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const processApiData = (data: ApiResponse) => {
+  const processApiData = (data: EditIssuePayload[]) => {
     // Adapt this based on the actual API response structure
-    return data.issues.map((issue) => ({
+    return data.map((issue) => ({
       ...issue,
       year: new Date(issue.lastModified).getFullYear(), // Extract year from date if not provided
-    })) as (IssueType & { year: number })[];
+    })) as (EditIssuePayload & { year: number })[];
   };
 
   // Cache management functions
-  const cacheData = (data: (IssueType & { year: number })[]) => {
+  const cacheData = (data: (EditIssuePayload & { year: number })[]) => {
     try {
       localStorage.setItem(CACHE_KEY, JSON.stringify(data));
       localStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
@@ -124,7 +106,7 @@ const SearchInput = () => {
         const isRecent =
           Date.now() - parseInt(cachedTimestamp) < CACHE_DURATION;
         if (isRecent) {
-          return JSON.parse(cachedData) as (IssueType & { year: number })[];
+          return JSON.parse(cachedData) as (EditIssuePayload & { year: number })[];
         }
       }
       return null;

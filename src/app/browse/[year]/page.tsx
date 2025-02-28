@@ -6,6 +6,7 @@ import IssueTable from "../_components/issue-table";
 import { User } from "firebase/auth";
 import { onAuthStateChanged } from "@/lib/firebase/auth";
 import IssueTableSkeleton from "../_components/issue-table-skeleton";
+import { getIssues } from "@/lib/firebase/firestore";
 
 interface PageProps {
   params: Promise<{ year: string }>;
@@ -15,20 +16,28 @@ export default function BrowsePage({ params }: PageProps) {
   const [issues, setIssues] = useState<EditIssuePayload[]>([]);
   const [user, setUser] = useState<User | null>(null);
 
-  console.log(issues);
-
   onAuthStateChanged((user) => {
     setUser(user);
   });
 
-  console.log(issues);
   const [isLoading, setIsLoading] = useState(true);
 
   // Simulate initial data loading
   useState(() => {
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+    async function fetchIssues() {
+      await getIssues()
+        .then((issues) => {
+          setIssues(issues);
+        })
+        .catch((error) => {
+          console.error("There was an error retrieving the issues: ", error);
+          setIsLoading(false);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
+    fetchIssues();
   });
 
   // // Simulated add issue function
@@ -36,9 +45,10 @@ export default function BrowsePage({ params }: PageProps) {
     try {
       // Simulate API call delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
+      console.log(data);
 
       // Add new issue to state with a mock ID
-      setIssues((prev) => [...prev, { ...data, id: `${prev.length + 1}` }]);
+      //   setIssues((prev) => [...prev, { ...data, id: `${prev.length + 1}` }]);
 
       console.log("Issue added successfully");
     } catch (error) {
@@ -64,9 +74,9 @@ export default function BrowsePage({ params }: PageProps) {
       </div>
       <div>
         {isLoading ? (
-          <IssueTableSkeleton yearFolder={Number(year)} />
+          <IssueTableSkeleton data={issues} yearFolder={Number(year)} />
         ) : (
-          <IssueTable yearFolder={Number(year)} />
+          <IssueTable data={issues} yearFolder={Number(year)} />
         )}
       </div>
     </div>

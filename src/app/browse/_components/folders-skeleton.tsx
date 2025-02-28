@@ -1,11 +1,11 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { mockData } from "@/constants/browse-mock-data";
 import useGroupedIssues from "@/hooks/useGroupedIssuesByYear";
+import { EditIssuePayload } from "@/lib/types/issues.types";
 import { Dot } from "lucide-react";
 
-const FolderSkeleton = () => {
+const FolderSkeleton = ({ issues }: { issues: EditIssuePayload[] }) => {
   // Group issues by publication year (logic for this could be done in API routes)
-  const yearFolders = useGroupedIssues(mockData);
+  const yearFolders = useGroupedIssues(issues);
 
   return (
     <section className="space-y-6.5">

@@ -15,21 +15,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { IssueType, mockData } from "@/constants/browse-mock-data";
 import { FileText, ArrowUp, ArrowDown } from "lucide-react";
 import { useState } from "react";
 import IssueDialog from "@/components/issue-dialog";
 import { EditIssuePayload } from "@/lib/types/issues.types";
 import { User } from "firebase/auth";
 import { onAuthStateChanged } from "@/lib/firebase/auth";
-import { IssueTableColumnType } from "../_types/issue-table.types";
+import {
+  IssueTableColumnType,
+  IssueTableProps,
+} from "../_types/issue-table.types";
 import useIssues from "@/hooks/useIssues";
 
-interface IssueTableProps {
-  yearFolder: number;
-}
-
-const IssueTable = ({ yearFolder }: IssueTableProps) => {
+const IssueTable = ({ data, yearFolder }: IssueTableProps) => {
   const [user, setUser] = useState<User | null>(null);
 
   onAuthStateChanged((user) => {
@@ -41,7 +39,7 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
     { id: "title", desc: false },
   ]);
 
-  const issues = useIssues(mockData, yearFolder);
+  const issues = useIssues(data, yearFolder);
 
   const [editIssue, setEditIssue] = useState<EditIssuePayload[]>([]);
 
@@ -52,6 +50,7 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
     try {
       // Simulate API call delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
+      console.log(data);
 
       // Update issue in state
       setEditIssue((prev) =>
@@ -64,28 +63,6 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
       console.log("Failed to update issue");
     }
   };
-
-  //   helper to convert IssueType to EditIssuePayload
-  const mapIssueToEditIssuePayload = (
-    issue: IssueType,
-    yearFolder: number
-  ): EditIssuePayload => ({
-    id: String(0),
-    title: issue.title,
-    publisher: issue.publisher,
-    volume: issue.volume,
-    category: issue.category as
-      | "Magazine"
-      | "Newsletter"
-      | "Photobook"
-      | "Miscellaneous",
-    publicationYear: yearFolder,
-    issueNumber: 1,
-    thumbnailLink: "",
-    pdfLink: "",
-    lastModified: "",
-    createdBy: "",
-  });
 
   const columns = [
     columnHelper.accessor("title", {
@@ -123,19 +100,13 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
     ...(user
       ? [
           columnHelper.accessor("isAdmin", {
-            cell: (info) => {
-              const editValues = mapIssueToEditIssuePayload(
-                info.row.original,
-                yearFolder
-              );
-              return (
-                <IssueDialog
-                  mode="edit"
-                  defaultValues={editValues}
-                  onSubmit={handleEditIssue}
-                />
-              );
-            },
+            cell: (info) => (
+              <IssueDialog
+                mode="edit"
+                defaultValues={info.row.original}
+                onSubmit={handleEditIssue}
+              />
+            ),
             header: "Action",
             enableSorting: false,
           }),

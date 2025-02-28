@@ -78,7 +78,7 @@ IssueDialogProps) {
     try {
       if (mode === "add") {
         const transformedData: EditIssuePayload = {
-          id: 0,
+          id: "0",
           ...(data as AddIssuePayload),
         };
         await onSubmit(transformedData);

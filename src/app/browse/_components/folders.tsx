@@ -1,7 +1,6 @@
 "use client";
 import { Dot, FolderOpen } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { mockData } from "@/constants/browse-mock-data";
+import { useRouter } from "next/navigation"
 import useGroupedIssues from "@/hooks/useGroupedIssuesByYear";
 import IssueDialog from "@/components/issue-dialog";
 import { AddIssuePayload, EditIssuePayload } from "@/lib/types/issues.types";
@@ -9,28 +8,26 @@ import { useState } from "react";
 import { User } from "firebase/auth";
 import { onAuthStateChanged } from "@/lib/firebase/auth";
 
-const Folders = () => {
+const Folders = ({ issues }: { issues: EditIssuePayload[] }) => {
   const router = useRouter();
-  const [issues, setIssues] = useState<EditIssuePayload[]>([]);
   const [user, setUser] = useState<User | null>(null);
 
   // Group issues by publication year
-  const yearFolders = useGroupedIssues(mockData);
+  const yearFolders = useGroupedIssues(issues);
 
   onAuthStateChanged((user) => {
     setUser(user);
   });
-
-  console.log(issues);
-
+    
   // Simulated add issue function
   const handleAddIssue = async (data: AddIssuePayload) => {
     try {
       // Simulate API call delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
+      console.log(data);
 
       // Add new issue to state with a mock ID
-      setIssues((prev) => [...prev, { ...data, id: String(prev.length + 1) }]);
+      //   setIssues((prev) => [...prev, { ...data, id: String(prev.length + 1) }]);
 
       console.log("Issue added successfully");
     } catch (error) {

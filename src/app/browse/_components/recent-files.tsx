@@ -1,10 +1,9 @@
 import { Dot, FileText } from "lucide-react";
-import { mockData } from "@/constants/browse-mock-data";
 import useRecentIssues from "@/hooks/useRecentIssues";
+import { EditIssuePayload } from "@/lib/types/issues.types";
 
-const Recents = () => {
-  // Simulating sorted arrangement for recent files section (This could be done in the server)
-  const recentIssues = useRecentIssues(mockData)
+const Recents = ({ issues }: { issues: EditIssuePayload[] }) => {
+  const recentIssues = useRecentIssues(issues);
 
   return (
     <section className="space-y-6">

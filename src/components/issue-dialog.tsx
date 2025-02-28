@@ -50,10 +50,12 @@ export default function IssueDialog({
   defaultValues,
   onSubmit,
   yearFromRoute,
-}: //   issueData,
-IssueDialogProps) {
+  //   issueData,
+}: IssueDialogProps) {
   const [open, setOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
 
   const form = useForm<AddIssuePayload | EditIssuePayload>({
     resolver: zodResolver(mode === "add" ? AddIssueSchema : EditIssueSchema),
@@ -70,12 +72,34 @@ IssueDialogProps) {
             category: "Magazine" as const,
             thumbnailLink: "",
             pdfLink: "",
+            createdBy: "placeholder-user",
+            lastModified: new Date().toISOString(),
           }
         : defaultValues,
   });
 
   async function handleSubmit(data: AddIssuePayload | EditIssuePayload) {
     try {
+    /* 
+    // UNCOMMENT THIS WHEN FIREBASE STORAGE IS READY
+
+      // Upload files to Firebase Storage
+      if (data.thumbnailLink instanceof File) {
+        const storage = getStorage();
+        const thumbnailRef = ref(storage, `thumbnails/${data.title}-${Date.now()}`);
+        await uploadBytes(thumbnailRef, data.thumbnailLink);
+        processedData.thumbnailLink = await getDownloadURL(thumbnailRef);
+      }
+      
+      if (data.pdfLink instanceof File) {
+        const storage = getStorage();
+        const pdfRef = ref(storage, `pdfs/${data.title}-${Date.now()}.pdf`);
+        await uploadBytes(pdfRef, data.pdfLink);
+        processedData.pdfLink = await getDownloadURL(pdfRef);
+      }
+    
+      */
+
       if (mode === "add") {
         const transformedData: EditIssuePayload = {
           id: "0",
@@ -85,10 +109,11 @@ IssueDialogProps) {
       } else {
         await onSubmit(data as EditIssuePayload);
       }
+      
       setOpen(false);
       form.reset();
     } catch (error) {
-      console.error(error);
+      console.error("Error in form submission:", error);
     }
   }
 
@@ -271,7 +296,9 @@ IssueDialogProps) {
                           className="hidden"
                           onChange={(e) => {
                             if (e.target.files?.[0]) {
-                              field.onChange(e.target.files[0]);
+                              setThumbnailFile(e.target.files[0]);
+                              // Set a placeholder URL for the actual form field
+                              field.onChange(`https://placehold.co/600x400?text=Thumbnail-${Date.now()}`);
                             }
                           }}
                         />
@@ -286,11 +313,11 @@ IssueDialogProps) {
                           Upload File <Upload className="h-4 w-4" />
                         </Button>
 
-                        {field.value && (
+                        {(field.value || thumbnailFile) && (
                           <div className="flex items-center gap-2">
-                            {typeof field.value === "string" ? (
+                            {thumbnailFile ? (
                               <Image
-                                src={field.value}
+                                src={URL.createObjectURL(thumbnailFile)}
                                 alt="Thumbnail preview"
                                 width={64}
                                 height={64}
@@ -298,7 +325,7 @@ IssueDialogProps) {
                               />
                             ) : (
                               <Image
-                                src={URL.createObjectURL(field.value)}
+                                src={field.value as string}
                                 alt="Thumbnail preview"
                                 width={64}
                                 height={64}
@@ -332,7 +359,8 @@ IssueDialogProps) {
                           className="hidden"
                           onChange={(e) => {
                             if (e.target.files?.[0]) {
-                              field.onChange(e.target.files[0]);
+                              setPdfFile(e.target.files[0]);
+                              field.onChange(`https://placehold.co/600x400?text=pdf-${Date.now()}`);
                             }
                           }}
                         />
@@ -347,13 +375,15 @@ IssueDialogProps) {
                           Upload File <Upload className="h-4 w-4" />
                         </Button>
 
-                        {field.value && (
+                        {(field.value || pdfFile) && (
                           <div className="flex items-center gap-2 p-2 border rounded-md">
                             <FileText className="h-6 w-6 text-primary-500" />
                             <span className="text-sm">
-                              {typeof field.value === "string"
-                                ? field.value.split("/").pop()
-                                : (field.value as File).name}
+                              {pdfFile 
+                                ? pdfFile.name 
+                                : typeof field.value === "string"
+                                  ? field.value.split("/").pop() || "PDF Document"
+                                  : "PDF Document"}
                             </span>
                           </div>
                         )}

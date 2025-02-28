@@ -1,12 +1,12 @@
 "use client";
 import IssueDialog from "@/components/issue-dialog";
 import { AddIssuePayload, EditIssuePayload } from "@/lib/types/issues.types";
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
 import IssueTable from "../_components/issue-table";
 import { User } from "firebase/auth";
 import { onAuthStateChanged } from "@/lib/firebase/auth";
 import IssueTableSkeleton from "../_components/issue-table-skeleton";
-import { getIssuesByYear } from "@/lib/firebase/firestore";
+import { getIssuesByYear,  addIssue } from "@/lib/firebase/firestore";
 
 interface PageProps {
   params: Promise<{ year: string }>;
@@ -23,37 +23,35 @@ export default function BrowsePage({ params }: PageProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   // Simulate initial data loading
-  useState(() => {
+  useEffect(() => {
     async function fetchIssues() {
-      await getIssuesByYear(Number(year))
-        .then((issues) => {
-          setIssues(issues);
-        })
-        .catch((error) => {
-          console.error("There was an error retrieving the issues: ", error);
-          setIsLoading(false);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+      try {
+        const fetchedIssues = await getIssuesByYear(Number(year));
+        setIssues(fetchedIssues);
+      } catch (error) {
+        console.error("There was an error retrieving the issues: ", error);
+      } finally {
+        setIsLoading(false);
+      }
     }
+    
     fetchIssues();
-  });
+  }, [year]);
 
-  // // Simulated add issue function
   const handleAddIssue = async (data: AddIssuePayload) => {
     try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log(data);
-
-      // Add new issue to state with a mock ID
-      //   setIssues((prev) => [...prev, { ...data, id: `${prev.length + 1}` }]);
-
-      console.log("Issue added successfully");
+      console.log("Form data:", data);
+      setIsLoading(true);
+      
+      const newIssueId = await addIssue(data);
+      
+      setIssues(prev => [...prev, { ...data, id: newIssueId }]);
+      
+      console.log("Issue added successfully with ID:", newIssueId);
     } catch (error) {
-      console.error(error);
-      console.log("Failed to add issue");
+      console.error("Failed to add issue:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -63,7 +61,9 @@ export default function BrowsePage({ params }: PageProps) {
         <h1 className="font-bold text-2xl">Index of /browse/{year}</h1>
         <div className="flex items-center justify-between">
           <h1 className="text-lg">All Files</h1>
-          {user && (
+          {
+          // user && <--- temporarily disable auth conditional rendering for dev purposes
+          (
             <IssueDialog
               mode="add"
               onSubmit={handleAddIssue}

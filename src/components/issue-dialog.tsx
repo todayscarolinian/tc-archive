@@ -41,6 +41,7 @@ interface IssueDialogProps {
   mode: "add" | "edit";
   defaultValues?: EditIssuePayload;
   onSubmit: (data: EditIssuePayload) => Promise<void>;
+  onDelete?: (id: string) => Promise<void>;
   yearFromRoute?: string;
   //   issueData?: EditIssuePayload;
 }
@@ -49,6 +50,7 @@ export default function IssueDialog({
   mode,
   defaultValues,
   onSubmit,
+  onDelete,
   yearFromRoute,
   //   issueData,
 }: IssueDialogProps) {
@@ -116,6 +118,18 @@ export default function IssueDialog({
       console.error("Error in form submission:", error);
     }
   }
+
+  const handleDelete = async () => {
+    if (defaultValues?.id && onDelete) {
+      try {
+        await onDelete(defaultValues.id);
+        setOpenDelete(false);
+        setOpen(false);
+      } catch (error) {
+        console.error("Error deleting issue:", error);
+      }
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -434,7 +448,7 @@ export default function IssueDialog({
                         <Button
                           type="submit"
                           className="bg-primary-500 hover:bg-primary-700 text-white flex cursor-pointer px-3 py-2 rounded-md items-center gap-2"
-                          onClick={() => setOpen(false)}
+                          onClick={handleDelete}
                         >
                           Continue
                         </Button>

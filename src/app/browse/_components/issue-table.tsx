@@ -25,7 +25,7 @@ import {
   IssueTableColumnType,
   IssueTableProps,
 } from "../_types/issue-table.types";
-import { editIssue as updateFirestoreIssue } from "@/lib/firebase/firestore";
+import { editIssue as updateFirestoreIssue, deleteIssue as deleteFirestoreIssue } from "@/lib/firebase/firestore";
 
 const IssueTable = ({ issues: initialIssues, yearFolder }: IssueTableProps) => {
   const [user, setUser] = useState<User | null>(null);
@@ -57,6 +57,25 @@ const IssueTable = ({ issues: initialIssues, yearFolder }: IssueTableProps) => {
     } catch (error) {
       console.error(error);
       console.log("Failed to update issue");
+    }
+  };
+
+  const handleDeleteIssue = async (id: string) => {
+    try {
+      const success = await deleteFirestoreIssue({ id });
+      
+      if (success) {
+        setIssues(prevIssues => 
+          prevIssues.filter(issue => issue.id !== id)
+        );
+        
+        console.log("Issue deleted successfully");
+      } else {
+        console.log("Failed to delete issue");
+      }
+    } catch (error) {
+      console.error(error);
+      console.log("Failed to delete issue");
     }
   };
 
@@ -101,6 +120,7 @@ const IssueTable = ({ issues: initialIssues, yearFolder }: IssueTableProps) => {
                 mode="edit"
                 defaultValues={info.row.original}
                 onSubmit={handleEditIssue}
+                onDelete={handleDeleteIssue}
               />
             ),
             header: "Action",

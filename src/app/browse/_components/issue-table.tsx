@@ -25,8 +25,9 @@ import {
   IssueTableColumnType,
   IssueTableProps,
 } from "../_types/issue-table.types";
+import { editIssue as updateFirestoreIssue } from "@/lib/firebase/firestore";
 
-const IssueTable = ({ issues, yearFolder }: IssueTableProps) => {
+const IssueTable = ({ issues: initialIssues, yearFolder }: IssueTableProps) => {
   const [user, setUser] = useState<User | null>(null);
 
   onAuthStateChanged((user) => {
@@ -38,23 +39,21 @@ const IssueTable = ({ issues, yearFolder }: IssueTableProps) => {
     { id: "title", desc: false },
   ]);
 
-  const [editIssue, setEditIssue] = useState<EditIssuePayload[]>([]);
+  const [issues, setIssues] = useState<EditIssuePayload[]>(initialIssues);
 
-  console.log(editIssue);
-
-  // Simulated edit issue function
   const handleEditIssue = async (data: EditIssuePayload) => {
     try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log(data);
-
-      // Update issue in state
-      setEditIssue((prev) =>
-        prev.map((issue) => (issue.id === data.id ? data : issue))
-      );
-
-      console.log("Issue updated successfully");
+      const success = await updateFirestoreIssue(data);
+      
+      if (success) {
+        setIssues(prevIssues => 
+          prevIssues.map(issue => issue.id === data.id ? data : issue)
+        );
+        
+        console.log("Issue updated successfully");
+      } else {
+        console.log("Failed to update issue");
+      }
     } catch (error) {
       console.error(error);
       console.log("Failed to update issue");
@@ -94,7 +93,7 @@ const IssueTable = ({ issues, yearFolder }: IssueTableProps) => {
       header: "Last Modified",
       enableSorting: true,
     }),
-    ...(user
+    ...(true // user // <-- Uncomment and remove true to enable isAdmin conditional rendering
       ? [
           columnHelper.accessor("isAdmin", {
             cell: (info) => (

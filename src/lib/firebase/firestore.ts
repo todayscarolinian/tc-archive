@@ -104,14 +104,12 @@ export async function addIssue(issue: AddIssuePayload): Promise<string> {
  * 
  * @returns A promise that resolves to true when the update is successful, and false if otherwise.
  */
-export async function editIssue(issue: EditIssuePayload): Promise<boolean> {
+export async function editIssue(issue: EditIssuePayload): Promise<void> {
     try {
         await updateDoc(doc(db, "issues", issue.id), issue);
-        return true;
     }
     catch(error) {
         console.error("There was an error updating the issue: ", error);
-        return false;
     }
 }
 
@@ -124,13 +122,11 @@ export async function editIssue(issue: EditIssuePayload): Promise<boolean> {
  * 
  * @returns A promise that resolves to true when the deletion is successful, and false if otherwise.
  */
-export async function deleteIssue(issue: DeleteIssuePayload): Promise<boolean> {
+export async function deleteIssue(issue: DeleteIssuePayload): Promise<void> {
     try {
         await deleteDoc(doc(db, "issues", issue.id));
-        return true;
     }
     catch(error) {
         console.error("There was an error updating the issue: ", error);
-        return false;
     }
 }

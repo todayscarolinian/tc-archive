@@ -102,7 +102,7 @@ export async function addIssue(issue: AddIssuePayload): Promise<string> {
  * 
  * @throws If there is an error when updating the issue in Firestore.
  * 
- * @returns A promise that resolves to true when the update is successful, and false if otherwise.
+ * @returns A promise that resolves when the update is successful.
  */
 export async function editIssue(issue: EditIssuePayload): Promise<void> {
     try {
@@ -120,7 +120,7 @@ export async function editIssue(issue: EditIssuePayload): Promise<void> {
  * 
  * @throws If there is an error when deleting the issue from Firestore.
  * 
- * @returns A promise that resolves to true when the deletion is successful, and false if otherwise.
+ * @returns A promise that resolves when the deletion is successful.
  */
 export async function deleteIssue(issue: DeleteIssuePayload): Promise<void> {
     try {

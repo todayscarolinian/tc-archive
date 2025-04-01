@@ -51,12 +51,6 @@ export default function Navbar() {
         >
           Browse
         </Link>
-        <Link
-          href="/about"
-          className="text-black transition-colors hover:text-primary-500 hover:font-bold text-base"
-        >
-          About
-        </Link>
         <Dialog>
           <DialogTrigger className="text-black transition-colors hover:text-primary-500 hover:font-bold text-base cursor-pointer">
             Donate
@@ -110,9 +104,6 @@ export default function Navbar() {
             </Link>
             <Link href="/browse" className="text-white">
               Browse
-            </Link>
-            <Link href="/about" className="text-white">
-              About
             </Link>
             <Dialog>
               <DialogTrigger className="text-white text-left">

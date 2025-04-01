@@ -32,7 +32,7 @@ export default function Home() {
     },
   ];
 
-  return (
+  return ( 
     <section className="h-svh flex flex-col justify-between">
       <nav className="flex p-8">
         <Image

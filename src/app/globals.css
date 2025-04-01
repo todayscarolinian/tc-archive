@@ -25,8 +25,8 @@
   --color-accent_black-500: #151515;
   --color-accent_black: #151515;
 
-  --color-accent_orange-500: #f49656;
-  --color-accent_orange: #f49656;
+  --color-accent_orangee-500: #f49656;
+  --color-accent_orangee: #f49656;
 
   --color-grayscale-100: #f7f7f7;
   --color-grayscale-200: #efefef;
@@ -179,19 +179,6 @@
 @layer base {
   * {
     @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
-
-/*
-  ---break---
-*/
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;

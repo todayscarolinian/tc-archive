@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Search, X } from "lucide-react";
 import { getIssues } from "@/lib/firebase/firestore";
 import { EditIssuePayload } from "@/lib/types/issues.types";
+import Image from "next/image";
 
 /*
  * SearchInput Component
@@ -38,9 +39,9 @@ import { EditIssuePayload } from "@/lib/types/issues.types";
 
 const SearchInput = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [allIssues, setAllIssues] = useState<(EditIssuePayload & { year: number })[]>(
-    []
-  );
+  const [allIssues, setAllIssues] = useState<
+    (EditIssuePayload & { year: number })[]
+  >([]);
   const [filteredIssues, setFilteredIssues] = useState<
     (EditIssuePayload & { year: number })[]
   >([]);
@@ -106,7 +107,9 @@ const SearchInput = () => {
         const isRecent =
           Date.now() - parseInt(cachedTimestamp) < CACHE_DURATION;
         if (isRecent) {
-          return JSON.parse(cachedData) as (EditIssuePayload & { year: number })[];
+          return JSON.parse(cachedData) as (EditIssuePayload & {
+            year: number;
+          })[];
         }
       }
       return null;
@@ -238,10 +241,14 @@ const SearchInput = () => {
                     className="p-4 flex border-b last:border-b-0 hover:bg-gray-50 cursor-pointer"
                   >
                     {/* Thumbnail placeholder */}
-                    <div className="w-16 h-16 bg-gray-200 rounded-md flex-shrink-0 mr-4 overflow-hidden">
-                      <div className="w-full h-full flex items-center justify-center bg-gray-800 text-white text-xs font-medium">
-                        Vol. {issue.volume}
-                      </div>
+                    <div className="max-w-16 max-h-16 bg-gray-200 rounded-md flex-shrink-0 mr-4 overflow-hidden">
+                      <Image
+                        src="/placeholder-image.png"
+                        alt="Thumbnail"
+                        className="w-full h-full object-cover"
+                        width={100}
+                        height={100}
+                      />
                     </div>
                     {/* Content */}
                     <div className="flex-1">

@@ -6,7 +6,7 @@ import IssueTable from "../_components/issue-table";
 import { User } from "firebase/auth";
 import { onAuthStateChanged } from "@/lib/firebase/auth";
 import IssueTableSkeleton from "../_components/issue-table-skeleton";
-import { getIssuesByYear,  addIssue } from "@/lib/firebase/firestore";
+import { getIssuesByYear, addIssue } from "@/lib/firebase/firestore";
 
 interface PageProps {
   params: Promise<{ year: string }>;
@@ -34,7 +34,7 @@ export default function BrowsePage({ params }: PageProps) {
         setIsLoading(false);
       }
     }
-    
+
     fetchIssues();
   }, [year]);
 
@@ -42,11 +42,11 @@ export default function BrowsePage({ params }: PageProps) {
     try {
       console.log("Form data:", data);
       setIsLoading(true);
-      
+
       const newIssueId = await addIssue(data);
-      
-      setIssues(prev => [...prev, { ...data, id: newIssueId }]);
-      
+
+      setIssues((prev) => [...prev, { ...data, id: newIssueId }]);
+
       console.log("Issue added successfully with ID:", newIssueId);
     } catch (error) {
       console.error("Failed to add issue:", error);
@@ -61,9 +61,7 @@ export default function BrowsePage({ params }: PageProps) {
         <h1 className="font-bold text-2xl">Index of /browse/{year}</h1>
         <div className="flex items-center justify-between">
           <h1 className="text-lg">All Files</h1>
-          {
-          // user && <--- temporarily disable auth conditional rendering for dev purposes
-          (
+          {user && (
             <IssueDialog
               mode="add"
               onSubmit={handleAddIssue}

@@ -17,8 +17,6 @@ export async function getIssues(): Promise<EditIssuePayload[]> {
             }
         });
 
-        console.log(documentIssues);
-
         // Convert DocumentData[] to EditIssuePayload[]
         const issues: EditIssuePayload[] = documentIssues
             .map((issue) => {
@@ -45,10 +43,9 @@ export async function getIssues(): Promise<EditIssuePayload[]> {
  */
 export async function getIssuesByYear(year: number): Promise<EditIssuePayload[]> {
     try {
-        console.log(db);
         const q = query(
             collection(db, "issues"),
-            where("publicationYear", "==",year)
+            where("publicationYear", "==", year)
         );
 
         const issuesSnapshot = await getDocs(q);
@@ -68,7 +65,7 @@ export async function getIssuesByYear(year: number): Promise<EditIssuePayload[]>
 
         return issues;
     }
-    catch(error) {
+    catch (error) {
         console.error("There was an error retrieving the issues: ", error);
         throw error;
     }
@@ -89,7 +86,7 @@ export async function addIssue(issue: AddIssuePayload): Promise<string> {
 
         return docRef.id;
     }
-    catch(error) {
+    catch (error) {
         console.error("There was an error adding the issue: ", error);
         throw error;
     }
@@ -108,8 +105,9 @@ export async function editIssue(issue: EditIssuePayload): Promise<void> {
     try {
         await updateDoc(doc(db, "issues", issue.id), issue);
     }
-    catch(error) {
+    catch (error) {
         console.error("There was an error updating the issue: ", error);
+        throw error;
     }
 }
 
@@ -126,7 +124,8 @@ export async function deleteIssue(issue: DeleteIssuePayload): Promise<void> {
     try {
         await deleteDoc(doc(db, "issues", issue.id));
     }
-    catch(error) {
+    catch (error) {
         console.error("There was an error updating the issue: ", error);
+        throw error;
     }
 }

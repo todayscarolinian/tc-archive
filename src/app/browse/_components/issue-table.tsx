@@ -25,7 +25,10 @@ import {
   IssueTableColumnType,
   IssueTableProps,
 } from "../_types/issue-table.types";
-import { editIssue as updateFirestoreIssue, deleteIssue as deleteFirestoreIssue } from "@/lib/firebase/firestore";
+import {
+  editIssue as updateFirestoreIssue,
+  deleteIssue as deleteFirestoreIssue,
+} from "@/lib/firebase/firestore";
 
 const IssueTable = ({ issues: initialIssues, yearFolder }: IssueTableProps) => {
   const [user, setUser] = useState<User | null>(null);
@@ -43,17 +46,13 @@ const IssueTable = ({ issues: initialIssues, yearFolder }: IssueTableProps) => {
 
   const handleEditIssue = async (data: EditIssuePayload) => {
     try {
-      const success = await updateFirestoreIssue(data);
-      
-      if (success) {
-        setIssues(prevIssues => 
-          prevIssues.map(issue => issue.id === data.id ? data : issue)
-        );
-        
-        console.log("Issue updated successfully");
-      } else {
-        console.log("Failed to update issue");
-      }
+      await updateFirestoreIssue(data);
+
+      setIssues((prevIssues) =>
+        prevIssues.map((issue) => (issue.id === data.id ? data : issue))
+      );
+
+      console.log("Issue updated successfully");
     } catch (error) {
       console.error(error);
       console.log("Failed to update issue");
@@ -62,17 +61,11 @@ const IssueTable = ({ issues: initialIssues, yearFolder }: IssueTableProps) => {
 
   const handleDeleteIssue = async (id: string) => {
     try {
-      const success = await deleteFirestoreIssue({ id });
-      
-      if (success) {
-        setIssues(prevIssues => 
-          prevIssues.filter(issue => issue.id !== id)
-        );
-        
-        console.log("Issue deleted successfully");
-      } else {
-        console.log("Failed to delete issue");
-      }
+      await deleteFirestoreIssue({ id });
+
+      setIssues((prevIssues) => prevIssues.filter((issue) => issue.id !== id));
+
+      console.log("Issue deleted successfully");
     } catch (error) {
       console.error(error);
       console.log("Failed to delete issue");
@@ -108,11 +101,14 @@ const IssueTable = ({ issues: initialIssues, yearFolder }: IssueTableProps) => {
       enableSorting: true,
     }),
     columnHelper.accessor("lastModified", {
-      cell: (info) => info.getValue(),
+      cell: (info) =>
+        `${new Date(info.getValue()).toLocaleDateString()} ${new Date(
+          info.getValue()
+        ).toLocaleTimeString()}`,
       header: "Last Modified",
       enableSorting: true,
     }),
-    ...(true // user // <-- Uncomment and remove true to enable isAdmin conditional rendering
+    ...(user
       ? [
           columnHelper.accessor("isAdmin", {
             cell: (info) => (

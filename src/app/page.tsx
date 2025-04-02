@@ -60,7 +60,7 @@ export default function Home() {
             . We&apos;re working hard to create something amazing. Stay tuned!
           </p>
         </div>
-        <div className="py-12 flex items-center gap-8">
+        <div className="py-10 flex items-center gap-8">
           {socMedIcons.map((item, index) => (
             <Link
               key={index}

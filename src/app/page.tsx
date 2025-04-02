@@ -74,8 +74,8 @@ export default function Home() {
         </div>
       </main>
       <footer className="bg-primary-500 flex flex-col items-center py-8 text-white">
-        <p>Made with ♥ by TC WebDevs</p>
-        <p>
+        <p className="text-center">Made with ♥ by TC WebDevs</p>
+        <p className="text-center">
           Completely independent since 2019.{" "}
           <Dialog>
             <DialogTrigger className="transition-colors underline font-bold text-base cursor-pointer">

@@ -36,6 +36,13 @@ import {
 } from "./ui/select";
 import { FileText, Pencil, Plus, Upload } from "lucide-react";
 import Image from "next/image";
+import {
+  deleteObject,
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
 
 interface IssueDialogProps {
   mode: "add" | "edit";
@@ -52,8 +59,8 @@ export default function IssueDialog({
   onSubmit,
   onDelete,
   yearFromRoute,
-  //   issueData,
-}: IssueDialogProps) {
+}: //   issueData,
+IssueDialogProps) {
   const [open, setOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
@@ -82,36 +89,61 @@ export default function IssueDialog({
 
   async function handleSubmit(data: AddIssuePayload | EditIssuePayload) {
     try {
-    /* 
-    // UNCOMMENT THIS WHEN FIREBASE STORAGE IS READY
+      // Prepare a copy of the data to mutate
+      const processedData = { ...data };
 
-      // Upload files to Firebase Storage
-      if (data.thumbnailLink instanceof File) {
+      // Only for edit mode: delete old files if new ones are uploaded
+      if (mode === "edit" && defaultValues) {
         const storage = getStorage();
-        const thumbnailRef = ref(storage, `thumbnails/${data.title}-${Date.now()}`);
-        await uploadBytes(thumbnailRef, data.thumbnailLink);
+        // Delete old thumbnail if a new one is uploaded
+        if (thumbnailFile && defaultValues.thumbnailLink) {
+          try {
+            const oldThumbRef = ref(storage, defaultValues.thumbnailLink);
+            await deleteObject(oldThumbRef);
+          } catch (e) {
+            // Ignore if not found or error
+            console.warn("Could not delete old thumbnail:", e);
+          }
+        }
+        // Delete old PDF if a new one is uploaded
+        if (pdfFile && defaultValues.pdfLink) {
+          try {
+            const oldPdfRef = ref(storage, defaultValues.pdfLink);
+            await deleteObject(oldPdfRef);
+          } catch (e) {
+            // Ignore if not found or error
+            console.warn("Could not delete old PDF:", e);
+          }
+        }
+      }
+
+      if (thumbnailFile) {
+        const storage = getStorage();
+        const thumbnailRef = ref(
+          storage,
+          `thumbnails/${data.title}-${Date.now()}`
+        );
+        await uploadBytes(thumbnailRef, thumbnailFile);
         processedData.thumbnailLink = await getDownloadURL(thumbnailRef);
       }
-      
-      if (data.pdfLink instanceof File) {
+
+      if (pdfFile) {
         const storage = getStorage();
         const pdfRef = ref(storage, `pdfs/${data.title}-${Date.now()}.pdf`);
-        await uploadBytes(pdfRef, data.pdfLink);
+        await uploadBytes(pdfRef, pdfFile);
         processedData.pdfLink = await getDownloadURL(pdfRef);
       }
-    
-      */
 
       if (mode === "add") {
         const transformedData: EditIssuePayload = {
           id: "0",
-          ...(data as AddIssuePayload),
+          ...(processedData as AddIssuePayload),
         };
         await onSubmit(transformedData);
       } else {
-        await onSubmit(data as EditIssuePayload);
+        await onSubmit(processedData as EditIssuePayload);
       }
-      
+
       setOpen(false);
       form.reset();
     } catch (error) {
@@ -122,6 +154,24 @@ export default function IssueDialog({
   const handleDelete = async () => {
     if (defaultValues?.id && onDelete) {
       try {
+        // Delete associated files from storage before deleting the issue
+        const storage = getStorage();
+        if (defaultValues.thumbnailLink) {
+          try {
+            const thumbRef = ref(storage, defaultValues.thumbnailLink);
+            await deleteObject(thumbRef);
+          } catch (e) {
+            console.warn("Could not delete thumbnail on issue delete:", e);
+          }
+        }
+        if (defaultValues.pdfLink) {
+          try {
+            const pdfRef = ref(storage, defaultValues.pdfLink);
+            await deleteObject(pdfRef);
+          } catch (e) {
+            console.warn("Could not delete PDF on issue delete:", e);
+          }
+        }
         await onDelete(defaultValues.id);
         setOpenDelete(false);
         setOpen(false);
@@ -312,7 +362,9 @@ export default function IssueDialog({
                             if (e.target.files?.[0]) {
                               setThumbnailFile(e.target.files[0]);
                               // Set a placeholder URL for the actual form field
-                              field.onChange(`https://placehold.co/600x400?text=Thumbnail-${Date.now()}`);
+                              field.onChange(
+                                `https://placehold.co/600x400?text=Thumbnail-${Date.now()}`
+                              );
                             }
                           }}
                         />
@@ -374,7 +426,9 @@ export default function IssueDialog({
                           onChange={(e) => {
                             if (e.target.files?.[0]) {
                               setPdfFile(e.target.files[0]);
-                              field.onChange(`https://placehold.co/600x400?text=pdf-${Date.now()}`);
+                              field.onChange(
+                                `https://placehold.co/600x400?text=pdf-${Date.now()}`
+                              );
                             }
                           }}
                         />
@@ -393,11 +447,11 @@ export default function IssueDialog({
                           <div className="flex items-center gap-2 p-2 border rounded-md">
                             <FileText className="h-6 w-6 text-primary-500" />
                             <span className="text-sm">
-                              {pdfFile 
-                                ? pdfFile.name 
+                              {pdfFile
+                                ? pdfFile.name
                                 : typeof field.value === "string"
-                                  ? field.value.split("/").pop() || "PDF Document"
-                                  : "PDF Document"}
+                                ? field.value.split("/").pop() || "PDF Document"
+                                : "PDF Document"}
                             </span>
                           </div>
                         )}

@@ -52,8 +52,8 @@ export default function IssueDialog({
   onSubmit,
   onDelete,
   yearFromRoute,
-  //   issueData,
-}: IssueDialogProps) {
+}: //   issueData,
+IssueDialogProps) {
   const [open, setOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
@@ -82,7 +82,7 @@ export default function IssueDialog({
 
   async function handleSubmit(data: AddIssuePayload | EditIssuePayload) {
     try {
-    /* 
+      /* 
     // UNCOMMENT THIS WHEN FIREBASE STORAGE IS READY
 
       // Upload files to Firebase Storage
@@ -111,7 +111,7 @@ export default function IssueDialog({
       } else {
         await onSubmit(data as EditIssuePayload);
       }
-      
+
       setOpen(false);
       form.reset();
     } catch (error) {
@@ -292,124 +292,129 @@ export default function IssueDialog({
               )}
             />
             <div className="w-full">
-            <div className="grid grid-cols-1 gap-5 w-full">
-              <FormField
-                control={form.control}
-                name="thumbnailLink"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      <span className="font-bold">PDF Link</span>
-                      <span className="text-destructive">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <div className="flex flex-col gap-2">
-                        <input
-                          id="thumbnail"
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setThumbnailFile(e.target.files[0]);
-                              // Set a placeholder URL for the actual form field
-                              field.onChange(`https://placehold.co/600x400?text=Thumbnail-${Date.now()}`);
+              <div className="grid grid-cols-1 gap-5 w-full">
+                <FormField
+                  control={form.control}
+                  name="thumbnailLink"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        <span className="font-bold">Thumbnail</span>
+                        <span className="text-destructive">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <div className="flex flex-col gap-2">
+                          <input
+                            id="thumbnail"
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              if (e.target.files?.[0]) {
+                                setThumbnailFile(e.target.files[0]);
+                                // Set a placeholder URL for the actual form field
+                                field.onChange(
+                                  `https://placehold.co/600x400?text=Thumbnail-${Date.now()}`
+                                );
+                              }
+                            }}
+                          />
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            className="bg-primary-500 hover:bg-primary-700 text-white flex cursor-pointer px-3 py-2 rounded-md items-center gap-2"
+                            onClick={() =>
+                              document.getElementById("thumbnail")?.click()
                             }
-                          }}
-                        />
-                        <Button
-                          type="button"
-                          variant="secondary"
-                          className="bg-primary-500 hover:bg-primary-700 text-white flex cursor-pointer px-3 py-2 rounded-md items-center gap-2"
-                          onClick={() =>
-                            document.getElementById("thumbnail")?.click()
-                          }
-                        >
-                          Upload File <Upload className="h-4 w-4" />
-                        </Button>
+                          >
+                            Upload File <Upload className="h-4 w-4" />
+                          </Button>
 
-                        {(field.value || thumbnailFile) && (
-                          <div className="flex items-center gap-2">
-                            {thumbnailFile ? (
-                              <Image
-                                src={URL.createObjectURL(thumbnailFile)}
-                                alt="Thumbnail preview"
-                                width={64}
-                                height={64}
-                                className="w-16 h-16 rounded-md object-cover border"
-                              />
-                            ) : (
-                              <Image
-                                src={field.value as string}
-                                alt="Thumbnail preview"
-                                width={64}
-                                height={64}
-                                className="w-16 h-16 rounded-md object-cover border"
-                              />
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                          {(field.value || thumbnailFile) && (
+                            <div className="flex items-center gap-2">
+                              {thumbnailFile ? (
+                                <Image
+                                  src={URL.createObjectURL(thumbnailFile)}
+                                  alt="Thumbnail preview"
+                                  width={64}
+                                  height={64}
+                                  className="w-16 h-16 rounded-md object-cover border"
+                                />
+                              ) : (
+                                <Image
+                                  src={field.value as string}
+                                  alt="Thumbnail preview"
+                                  width={64}
+                                  height={64}
+                                  className="w-16 h-16 rounded-md object-cover border"
+                                />
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="pdfLink"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      <span className="font-bold">PDF File </span>
-                      <span className="text-destructive">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <div className="flex flex-col gap-2">
-                        <input
-                          id="pdfFile"
-                          type="file"
-                          accept=".pdf"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              setPdfFile(e.target.files[0]);
-                              field.onChange(`https://placehold.co/600x400?text=pdf-${Date.now()}`);
+                <FormField
+                  control={form.control}
+                  name="pdfLink"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        <span className="font-bold">PDF File </span>
+                        <span className="text-destructive">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <div className="flex flex-col gap-2">
+                          <input
+                            id="pdfFile"
+                            type="file"
+                            accept=".pdf"
+                            className="hidden"
+                            onChange={(e) => {
+                              if (e.target.files?.[0]) {
+                                setPdfFile(e.target.files[0]);
+                                field.onChange(
+                                  `https://placehold.co/600x400?text=pdf-${Date.now()}`
+                                );
+                              }
+                            }}
+                          />
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            className="bg-primary-500 hover:bg-primary-700 text-white flex cursor-pointer px-3 py-2 rounded-md items-center gap-2"
+                            onClick={() =>
+                              document.getElementById("pdfFile")?.click()
                             }
-                          }}
-                        />
-                        <Button
-                          type="button"
-                          variant="secondary"
-                          className="bg-primary-500 hover:bg-primary-700 text-white flex cursor-pointer px-3 py-2 rounded-md items-center gap-2"
-                          onClick={() =>
-                            document.getElementById("pdfFile")?.click()
-                          }
-                        >
-                          Upload File <Upload className="h-4 w-4" />
-                        </Button>
+                          >
+                            Upload File <Upload className="h-4 w-4" />
+                          </Button>
 
-                        {(field.value || pdfFile) && (
-                          <div className="flex items-center gap-2 p-2 border rounded-md">
-                            <FileText className="h-6 w-6 text-primary-500" />
-                            <span className="text-sm">
-                              {pdfFile 
-                                ? pdfFile.name 
-                                : typeof field.value === "string"
-                                  ? field.value.split("/").pop() || "PDF Document"
+                          {(field.value || pdfFile) && (
+                            <div className="flex items-center gap-2 p-2 border rounded-md">
+                              <FileText className="h-6 w-6 text-primary-500" />
+                              <span className="text-sm">
+                                {pdfFile
+                                  ? pdfFile.name
+                                  : typeof field.value === "string"
+                                  ? field.value.split("/").pop() ||
+                                    "PDF Document"
                                   : "PDF Document"}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
-          </div>
             <div className="flex justify-end gap-2">
               {mode === "add" ? (
                 <Button

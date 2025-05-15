@@ -348,7 +348,7 @@ IssueDialogProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      <span className="font-bold">Thumbnail </span>
+                      <span className="font-bold">Thumbnail</span>
                       <span className="text-destructive">*</span>
                     </FormLabel>
                     <FormControl>

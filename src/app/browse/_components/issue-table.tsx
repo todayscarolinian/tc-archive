@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { FileText, ArrowUp, ArrowDown } from "lucide-react";
+import { FileText, ArrowUp, ArrowDown, Eye } from "lucide-react";
 import { useState } from "react";
 import IssueDialog from "@/components/issue-dialog";
 import { EditIssuePayload } from "@/lib/types/issues.types";
@@ -29,6 +29,8 @@ import {
   editIssue as updateFirestoreIssue,
   deleteIssue as deleteFirestoreIssue,
 } from "@/lib/firebase/firestore";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const IssueTable = ({ issues: initialIssues, yearFolder }: IssueTableProps) => {
   const [user, setUser] = useState<User | null>(null);
@@ -112,18 +114,44 @@ const IssueTable = ({ issues: initialIssues, yearFolder }: IssueTableProps) => {
       ? [
           columnHelper.accessor("isAdmin", {
             cell: (info) => (
-              <IssueDialog
-                mode="edit"
-                defaultValues={info.row.original}
-                onSubmit={handleEditIssue}
-                onDelete={handleDeleteIssue}
-              />
+              <div className="flex gap-2">
+                <Button
+                  className="bg-primary-500 hover:bg-primary-700 text-white flex cursor-pointer px-3 py-2 rounded-md items-center gap-2"
+                  onClick={() => {
+                    const pdfLink = info.row.original.pdfLink;
+                    if (pdfLink)
+                      window.open(pdfLink, "_blank", "noopener,noreferrer");
+                  }}
+                >
+                  <Eye className="h-4 w-4" />
+                </Button>
+                <IssueDialog
+                  mode="edit"
+                  defaultValues={info.row.original}
+                  onSubmit={handleEditIssue}
+                  onDelete={handleDeleteIssue}
+                />
+              </div>
             ),
             header: "Action",
             enableSorting: false,
           }),
         ]
-      : []),
+      : [
+          columnHelper.accessor("id", {
+            cell: (info) => (
+              <Link
+                href={info.row.original.pdfLink}
+                target="_blank"
+                className="bg-primary-500 hover:bg-primary-700 text-white px-2 py-1 rounded text-xs"
+              >
+                View
+              </Link>
+            ),
+            header: "Action",
+            enableSorting: false,
+          }),
+        ]),
   ];
 
   const handleSortingChange = (columnId: string) => {

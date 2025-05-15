@@ -40,7 +40,7 @@ const BrowsePage = () => {
         ) : (
           <>
             <Recents issues={issues} />
-            <Folders issues={issues} />
+            <Folders issues={issues} setIssues={setIssues} />
           </>
         )}
       </div>

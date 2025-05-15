@@ -379,33 +379,33 @@ IssueDialogProps) {
                           Upload File <Upload className="h-4 w-4" />
                         </Button>
 
-                        {(field.value || thumbnailFile) && (
-                          <div className="flex items-center gap-2">
-                            {thumbnailFile ? (
-                              <Image
-                                src={URL.createObjectURL(thumbnailFile)}
-                                alt="Thumbnail preview"
-                                width={64}
-                                height={64}
-                                className="w-16 h-16 rounded-md object-cover border"
-                              />
-                            ) : (
-                              <Image
-                                src={field.value as string}
-                                alt="Thumbnail preview"
-                                width={64}
-                                height={64}
-                                className="w-16 h-16 rounded-md object-cover border"
-                              />
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                          {(field.value || thumbnailFile) && (
+                            <div className="flex items-center gap-2">
+                              {thumbnailFile ? (
+                                <Image
+                                  src={URL.createObjectURL(thumbnailFile)}
+                                  alt="Thumbnail preview"
+                                  width={64}
+                                  height={64}
+                                  className="w-16 h-16 rounded-md object-cover border"
+                                />
+                              ) : (
+                                <Image
+                                  src={field.value as string}
+                                  alt="Thumbnail preview"
+                                  width={64}
+                                  height={64}
+                                  className="w-16 h-16 rounded-md object-cover border"
+                                />
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
               <FormField
                 control={form.control}
@@ -443,24 +443,26 @@ IssueDialogProps) {
                           Upload File <Upload className="h-4 w-4" />
                         </Button>
 
-                        {(field.value || pdfFile) && (
-                          <div className="flex items-center gap-2 p-2 border rounded-md">
-                            <FileText className="h-6 w-6 text-primary-500" />
-                            <span className="text-sm">
-                              {pdfFile
-                                ? pdfFile.name
-                                : typeof field.value === "string"
-                                ? field.value.split("/").pop() || "PDF Document"
-                                : "PDF Document"}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                          {(field.value || pdfFile) && (
+                            <div className="flex items-center gap-2 p-2 border rounded-md">
+                              <FileText className="h-6 w-6 text-primary-500" />
+                              <span className="text-sm">
+                                {pdfFile
+                                  ? pdfFile.name
+                                  : typeof field.value === "string"
+                                  ? field.value.split("/").pop() ||
+                                    "PDF Document"
+                                  : "PDF Document"}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
             <div className="flex justify-end gap-2">
               {mode === "add" ? (

@@ -1,14 +1,20 @@
 "use client";
 import { Dot, FolderOpen } from "lucide-react";
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation";
 import useGroupedIssues from "@/hooks/useGroupedIssuesByYear";
 import IssueDialog from "@/components/issue-dialog";
 import { AddIssuePayload, EditIssuePayload } from "@/lib/types/issues.types";
 import { useState } from "react";
 import { User } from "firebase/auth";
 import { onAuthStateChanged } from "@/lib/firebase/auth";
+import { addIssue } from "@/lib/firebase/firestore";
 
-const Folders = ({ issues }: { issues: EditIssuePayload[] }) => {
+interface FoldersProps {
+  issues: EditIssuePayload[];
+  setIssues: React.Dispatch<React.SetStateAction<EditIssuePayload[]>>;
+}
+
+const Folders = ({ issues, setIssues }: FoldersProps) => {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
 
@@ -18,21 +24,19 @@ const Folders = ({ issues }: { issues: EditIssuePayload[] }) => {
   onAuthStateChanged((user) => {
     setUser(user);
   });
-    
+
   // Simulated add issue function
   const handleAddIssue = async (data: AddIssuePayload) => {
     try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log(data);
+      console.log("Form data:", data);
 
-      // Add new issue to state with a mock ID
-      //   setIssues((prev) => [...prev, { ...data, id: String(prev.length + 1) }]);
+      const newIssueId = await addIssue(data);
 
-      console.log("Issue added successfully");
+      setIssues((prev) => [...prev, { ...data, id: newIssueId }]);
+
+      console.log("Issue added successfully with ID:", newIssueId);
     } catch (error) {
-      console.error(error);
-      console.log("Failed to add issue");
+      console.error("Failed to add issue:", error);
     }
   };
 

@@ -110,9 +110,10 @@ export const EditIssueSchema = z.object({
     }),
     thumbnailLink: z
         .string({
+            required_error: "thumbnailLink is required",
             invalid_type_error: "thumbnailLink must be a string",
         })
-        .optional(),
+        .min(1, "thumbnailLink cannot be empty"),
     pdfLink: z
         .string({
             required_error: "pdfLink is required",

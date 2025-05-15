@@ -291,14 +291,15 @@ export default function IssueDialog({
                 </FormItem>
               )}
             />
-            <div className="grid grid-cols-2 grid-rows-1 gap-5 justify-center items-center">
+            <div className="w-full">
+            <div className="grid grid-cols-1 gap-5 w-full">
               <FormField
                 control={form.control}
                 name="thumbnailLink"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      <span className="font-bold">Thumbnail </span>
+                      <span className="font-bold">PDF Link</span>
                       <span className="text-destructive">*</span>
                     </FormLabel>
                     <FormControl>
@@ -408,6 +409,7 @@ export default function IssueDialog({
                 )}
               />
             </div>
+          </div>
             <div className="flex justify-end gap-2">
               {mode === "add" ? (
                 <Button

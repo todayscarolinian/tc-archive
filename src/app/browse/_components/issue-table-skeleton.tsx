@@ -8,20 +8,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { mockData } from "@/constants/browse-mock-data";
 import { IssueTableProps } from "../_types/issue-table.types";
-import { mockUser } from "@/constants/user-mock-data";
-import useIssues from "@/hooks/useIssues";
+import { useState } from "react";
+import { User } from "firebase/auth";
+import { onAuthStateChanged } from "@/lib/firebase/auth";
 
-const IssueTableSkeleton = ({ yearFolder }: IssueTableProps) => {
-  const { isAdmin } = mockUser
-  const issues = useIssues(mockData, yearFolder)
+const IssueTableSkeleton = ({ issues }: IssueTableProps) => {
+  const [user, setUser] = useState<User | null>(null);
+
+  onAuthStateChanged((user) => {
+    setUser(user);
+  });
 
   /* 
     Admin user: Constant 6 columns (Name, Publisher, Volume, Category, Last Modified, Action)
     Constant 5 columns if not admin (Name, Publisher, Volume, Category, Last Modified)
   */
-  const columnCount = isAdmin ? 6 : 5
+  const columnCount = user ? 6 : 5;
   const skeletonColumns = Array.from({ length: columnCount });
 
   return (
@@ -61,7 +64,7 @@ const IssueTableSkeleton = ({ yearFolder }: IssueTableProps) => {
                       <Skeleton className="h-9 w-9 rounded-xl" />
                       <Skeleton className="h-4 w-32" />
                     </div>
-                  ) : colIndex === 5 && isAdmin ? (
+                  ) : colIndex === 5 && user ? (
                     <Skeleton className="h-9 w-9 rounded-md" />
                   ) : (
                     <Skeleton className="h-4 w-24" />

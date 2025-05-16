@@ -15,21 +15,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { IssueType, mockData } from "@/constants/browse-mock-data";
 import { FileText, ArrowUp, ArrowDown } from "lucide-react";
 import { useState } from "react";
 import IssueDialog from "@/components/issue-dialog";
 import { EditIssuePayload } from "@/lib/types/issues.types";
 import { User } from "firebase/auth";
 import { onAuthStateChanged } from "@/lib/firebase/auth";
-import { IssueTableColumnType } from "../_types/issue-table.types";
-import useIssues from "@/hooks/useIssues";
+import {
+  IssueTableColumnType,
+  IssueTableProps,
+} from "../_types/issue-table.types";
+import {
+  editIssue as updateFirestoreIssue,
+  deleteIssue as deleteFirestoreIssue,
+} from "@/lib/firebase/firestore";
 
-interface IssueTableProps {
-  yearFolder: number;
-}
-
-const IssueTable = ({ yearFolder }: IssueTableProps) => {
+const IssueTable = ({ issues: initialIssues, yearFolder }: IssueTableProps) => {
   const [user, setUser] = useState<User | null>(null);
 
   onAuthStateChanged((user) => {
@@ -40,19 +41,15 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "title", desc: false },
   ]);
-  const [editIssue, setEditIssue] = useState<EditIssuePayload[]>([]);
 
-  console.log(editIssue);
+  const [issues, setIssues] = useState<EditIssuePayload[]>(initialIssues);
 
-  // Simulated edit issue function
   const handleEditIssue = async (data: EditIssuePayload) => {
     try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await updateFirestoreIssue(data);
 
-      // Update issue in state
-      setEditIssue((prev) =>
-        prev.map((issue) => (issue.id === data.id ? data : issue))
+      setIssues((prevIssues) =>
+        prevIssues.map((issue) => (issue.id === data.id ? data : issue))
       );
 
       console.log("Issue updated successfully");
@@ -62,28 +59,18 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
     }
   };
 
-  const issues = useIssues(mockData, yearFolder);
+  const handleDeleteIssue = async (id: string) => {
+    try {
+      await deleteFirestoreIssue({ id });
 
-  //   helper to convert IssueType to EditIssuePayload
-  const mapIssueToEditIssuePayload = (
-    issue: IssueType,
-    yearFolder: number
-  ): EditIssuePayload => ({
-    id: 0,
-    title: issue.title,
-    publisher: issue.publisher,
-    volume: issue.volume,
-    category: issue.category as
-      | "Magazine"
-      | "Newsletter"
-      | "Photobook"
-      | "Miscellaneous",
-    publicationYear: yearFolder,
-    issueNumber: 1,
-    thumbnailLink: "",
-    pdfLink: "",
-    lastModified: "",
-  });
+      setIssues((prevIssues) => prevIssues.filter((issue) => issue.id !== id));
+
+      console.log("Issue deleted successfully");
+    } catch (error) {
+      console.error(error);
+      console.log("Failed to delete issue");
+    }
+  };
 
   const columns = [
     columnHelper.accessor("title", {
@@ -114,26 +101,24 @@ const IssueTable = ({ yearFolder }: IssueTableProps) => {
       enableSorting: true,
     }),
     columnHelper.accessor("lastModified", {
-      cell: (info) => info.getValue(),
+      cell: (info) =>
+        `${new Date(info.getValue()).toLocaleDateString()} ${new Date(
+          info.getValue()
+        ).toLocaleTimeString()}`,
       header: "Last Modified",
       enableSorting: true,
     }),
     ...(user
       ? [
           columnHelper.accessor("isAdmin", {
-            cell: (info) => {
-              const editValues = mapIssueToEditIssuePayload(
-                info.row.original,
-                yearFolder
-              );
-              return (
-                <IssueDialog
-                  mode="edit"
-                  defaultValues={editValues}
-                  onSubmit={handleEditIssue}
-                />
-              );
-            },
+            cell: (info) => (
+              <IssueDialog
+                mode="edit"
+                defaultValues={info.row.original}
+                onSubmit={handleEditIssue}
+                onDelete={handleDeleteIssue}
+              />
+            ),
             header: "Action",
             enableSorting: false,
           }),

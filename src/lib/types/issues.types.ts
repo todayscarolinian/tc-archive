@@ -51,18 +51,24 @@ export const AddIssueSchema = z.object({
             invalid_type_error: "pdfLink must be a string",
         })
         .min(1, "pdfLink cannot be empty"),
+    createdBy: z
+        .string({
+            required_error: "createdBy is required",
+            invalid_type_error: "createdBy must be a string"
+        })
+        .min(1, "createdBy cannot be empty"),
     lastModified: z
         .string({
-            required_error: "pdfLink is required",
-            invalid_type_error: "pdfLink must be a string",
+            required_error: "lastModified is required",
+            invalid_type_error: "lastModified must be a string"
         })
-        .min(1, "pdfLink cannot be empty"),
+        .min(1, "lastModified cannot be empty"),
 });
 
 export const EditIssueSchema = z.object({
-    id: z.number({
+    id: z.string({
         required_error: "id is required",
-        invalid_type_error: "id must be a number",
+        invalid_type_error: "id must be a string",
     }),
     title: z
         .string({
@@ -114,18 +120,24 @@ export const EditIssueSchema = z.object({
             invalid_type_error: "pdfLink must be a string",
         })
         .min(1, "pdfLink cannot be empty"),
+    createdBy: z
+        .string({
+            required_error: "createdBy is required",
+            invalid_type_error: "createdBy must be a string"
+        })
+        .min(1, "createdBy cannot be empty"),
     lastModified: z
         .string({
-            required_error: "pdfLink is required",
-            invalid_type_error: "pdfLink must be a string",
+            required_error: "lastModified is required",
+            invalid_type_error: "lastModified must be a string"
         })
-        .min(1, "pdfLink cannot be empty"),
+        .min(1, "lastModified cannot be empty"),
 });
 
 export const DeleteIssueSchema = z.object({
-    id: z.number({
+    id: z.string({
         required_error: "id is required",
-        invalid_type_error: "id must be a number",
+        invalid_type_error: "id must be a string",
     }),
 });
 

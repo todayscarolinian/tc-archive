@@ -1,11 +1,12 @@
 "use client";
 import IssueDialog from "@/components/issue-dialog";
 import { AddIssuePayload, EditIssuePayload } from "@/lib/types/issues.types";
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
 import IssueTable from "../_components/issue-table";
 import { User } from "firebase/auth";
 import { onAuthStateChanged } from "@/lib/firebase/auth";
 import IssueTableSkeleton from "../_components/issue-table-skeleton";
+import { getIssuesByYear, addIssue } from "@/lib/firebase/firestore";
 
 interface PageProps {
   params: Promise<{ year: string }>;
@@ -19,29 +20,38 @@ export default function BrowsePage({ params }: PageProps) {
     setUser(user);
   });
 
-  console.log(issues);
   const [isLoading, setIsLoading] = useState(true);
 
   // Simulate initial data loading
-  useState(() => {
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-  });
+  useEffect(() => {
+    async function fetchIssues() {
+      try {
+        const fetchedIssues = await getIssuesByYear(Number(year));
+        setIssues(fetchedIssues);
+      } catch (error) {
+        console.error("There was an error retrieving the issues: ", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
 
-  // // Simulated add issue function
+    fetchIssues();
+  }, [year]);
+
   const handleAddIssue = async (data: AddIssuePayload) => {
     try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      console.log("Form data:", data);
+      setIsLoading(true);
 
-      // Add new issue to state with a mock ID
-      setIssues((prev) => [...prev, { ...data, id: prev.length + 1 }]);
+      const newIssueId = await addIssue(data);
 
-      console.log("Issue added successfully");
+      setIssues((prev) => [...prev, { ...data, id: newIssueId }]);
+
+      console.log("Issue added successfully with ID:", newIssueId);
     } catch (error) {
-      console.error(error);
-      console.log("Failed to add issue");
+      console.error("Failed to add issue:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -62,9 +72,9 @@ export default function BrowsePage({ params }: PageProps) {
       </div>
       <div>
         {isLoading ? (
-          <IssueTableSkeleton yearFolder={Number(year)} />
+          <IssueTableSkeleton issues={issues} yearFolder={Number(year)} />
         ) : (
-          <IssueTable yearFolder={Number(year)} />
+          <IssueTable issues={issues} yearFolder={Number(year)} />
         )}
       </div>
     </div>

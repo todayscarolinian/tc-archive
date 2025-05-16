@@ -1,6 +1,7 @@
 import { Dot, FileText } from "lucide-react";
 import useRecentIssues from "@/hooks/useRecentIssues";
 import { EditIssuePayload } from "@/lib/types/issues.types";
+import Link from "next/link";
 
 const Recents = ({ issues }: { issues: EditIssuePayload[] }) => {
   const recentIssues = useRecentIssues(issues);
@@ -10,8 +11,10 @@ const Recents = ({ issues }: { issues: EditIssuePayload[] }) => {
       <h1 className="text-lg font-bold">Recent</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {recentIssues.map((issue, idx) => (
-          <div
+          <Link
             key={`${issue.title}-${issue.lastModified}-${idx}`}
+                href={issue.pdfLink}
+            target="_blank"
             className="flex items-center gap-4 border p-4 rounded-xl hover:bg-gray-100/50 cursor-pointer"
           >
             <div className="p-3.5 rounded-xl border bg-gray-100/50">
@@ -26,7 +29,7 @@ const Recents = ({ issues }: { issues: EditIssuePayload[] }) => {
               </div>
               <p className="text-xs text-gray-400">{issue.lastModified}</p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </section>

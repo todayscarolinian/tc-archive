@@ -43,6 +43,7 @@ import {
   ref,
   uploadBytes,
 } from "firebase/storage";
+import { toast } from "sonner";
 
 interface IssueDialogProps {
   mode: "add" | "edit";
@@ -65,6 +66,7 @@ IssueDialogProps) {
   const [openDelete, setOpenDelete] = useState(false);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<AddIssuePayload | EditIssuePayload>({
     resolver: zodResolver(mode === "add" ? AddIssueSchema : EditIssueSchema),
@@ -88,6 +90,7 @@ IssueDialogProps) {
   });
 
   async function handleSubmit(data: AddIssuePayload | EditIssuePayload) {
+    setLoading(true);
     try {
       // Prepare a copy of the data to mutate
       const processedData = { ...data };
@@ -148,12 +151,21 @@ IssueDialogProps) {
       form.reset();
       setThumbnailFile(null);
       setPdfFile(null);
+      toast.success(
+        mode === "add"
+          ? "Issue added successfully!"
+          : "Issue updated successfully!"
+      );
     } catch (error) {
       console.error("Error in form submission:", error);
+      toast.error("There was an error submitting the form.");
+    } finally {
+      setLoading(false);
     }
   }
 
   const handleDelete = async () => {
+    setLoading(true);
     if (defaultValues?.id && onDelete) {
       try {
         // Delete associated files from storage before deleting the issue
@@ -179,7 +191,11 @@ IssueDialogProps) {
         setOpen(false);
       } catch (error) {
         console.error("Error deleting issue:", error);
+      } finally {
+        setLoading(false);
       }
+    } else {
+      setLoading(false);
     }
   };
 
@@ -325,16 +341,16 @@ IssueDialogProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem className="font-bold" value="Magazine">
+                      <SelectItem className="" value="Magazine">
                         Magazine
                       </SelectItem>
-                      <SelectItem className="font-bold" value="Newsletter">
+                      <SelectItem className="" value="Newsletter">
                         Newsletter
                       </SelectItem>
-                      <SelectItem className="font-bold" value="Photobook">
+                      <SelectItem className="" value="Photobook">
                         Photobook
                       </SelectItem>
-                      <SelectItem className="font-bold" value="Miscellaneous">
+                      <SelectItem className="" value="Miscellaneous">
                         Miscellaneous
                       </SelectItem>
                     </SelectContent>
@@ -505,8 +521,9 @@ IssueDialogProps) {
                           type="submit"
                           className="bg-primary-500 hover:bg-primary-700 text-white flex cursor-pointer px-3 py-2 rounded-md items-center gap-2"
                           onClick={handleDelete}
+                          disabled={loading}
                         >
-                          Continue
+                          {loading ? "Deleting..." : "Continue"}
                         </Button>
                       </DialogFooter>
                     </DialogContent>
@@ -516,8 +533,9 @@ IssueDialogProps) {
               <Button
                 type="submit"
                 className="bg-primary-500 hover:bg-primary-700 text-white flex cursor-pointer px-3 py-2 rounded-md items-center gap-2"
+                disabled={loading}
               >
-                {mode === "add" ? "Submit" : "Save"}
+                {loading ? "Loading..." : mode === "add" ? "Submit" : "Save"}
               </Button>
             </div>
           </form>

@@ -243,7 +243,7 @@ const SearchInput = () => {
                     {/* Thumbnail placeholder */}
                     <div className="max-w-16 max-h-16 bg-gray-200 rounded-md flex-shrink-0 mr-4 overflow-hidden">
                       <Image
-                        src="/placeholder-image.png"
+                        src={issue.thumbnailLink || "/placeholder-image.png"}
                         alt="Thumbnail"
                         className="w-full h-full object-cover"
                         width={100}

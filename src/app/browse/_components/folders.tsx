@@ -8,6 +8,7 @@ import { useState } from "react";
 import { User } from "firebase/auth";
 import { onAuthStateChanged } from "@/lib/firebase/auth";
 import { addIssue } from "@/lib/firebase/firestore";
+import { formatDistanceToNow } from "date-fns";
 
 interface FoldersProps {
   issues: EditIssuePayload[];
@@ -75,7 +76,7 @@ const Folders = ({ issues, setIssues }: FoldersProps) => {
               <div className="flex items-center text-xs sm:text-sm text-muted-foreground">
                 <span>{folder.issuesCount} issues</span>
                 <Dot className="mx-1 w-4 h-4" />
-                <span>{folder.lastModified}</span>
+                <span>{formatDistanceToNow(new Date(folder.lastModified), { addSuffix: true })}</span>
               </div>
             </div>
           </div>

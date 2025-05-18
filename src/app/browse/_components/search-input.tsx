@@ -50,7 +50,10 @@ const SearchInput = () => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Cache duration in milliseconds (1 hour)
-  const CACHE_DURATION = 60 * 60 * 1000;
+  //   const CACHE_DURATION = 60 * 60 * 1000;
+
+  //Cache duration in milliseconds (30 seconds) for testing
+  const CACHE_DURATION = 30 * 1000;
   const CACHE_KEY = "issuesCache";
   const CACHE_TIMESTAMP_KEY = "issuesCacheTimestamp";
 

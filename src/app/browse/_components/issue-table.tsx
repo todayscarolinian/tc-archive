@@ -29,7 +29,6 @@ import {
   editIssue as updateFirestoreIssue,
   deleteIssue as deleteFirestoreIssue,
 } from "@/lib/firebase/firestore";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 const IssueTable = ({ issues: initialIssues, yearFolder }: IssueTableProps) => {

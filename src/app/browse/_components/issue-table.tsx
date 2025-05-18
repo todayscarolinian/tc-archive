@@ -140,13 +140,16 @@ const IssueTable = ({ issues: initialIssues, yearFolder }: IssueTableProps) => {
       : [
           columnHelper.accessor("id", {
             cell: (info) => (
-              <Link
-                href={info.row.original.pdfLink}
-                target="_blank"
-                className="bg-primary-500 hover:bg-primary-700 text-white px-2 py-1 rounded text-xs"
+              <Button
+                className="bg-primary-500 hover:bg-primary-700 text-white flex cursor-pointer px-3 py-2 rounded-md items-center gap-2"
+                onClick={() => {
+                  const pdfLink = info.row.original.pdfLink;
+                  if (pdfLink)
+                    window.open(pdfLink, "_blank", "noopener,noreferrer");
+                }}
               >
-                View
-              </Link>
+                <Eye className="h-4 w-4" />
+              </Button>
             ),
             header: "Action",
             enableSorting: false,

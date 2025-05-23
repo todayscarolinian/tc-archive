@@ -79,7 +79,7 @@ const IssueTable = ({ issues: initialIssues, yearFolder }: IssueTableProps) => {
     columnHelper.accessor("title", {
       cell: (info) => (
         <div className="flex items-center gap-3">
-          <div className="flex-shrink-0 w-16 h-16 relative">
+          <div className="shrink-0 w-16 h-16 relative">
             <Image
               src={info.row.original.thumbnailLink}
               alt={info.row.original.title}

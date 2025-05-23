@@ -19,7 +19,7 @@ const Recents = ({ issues }: { issues: EditIssuePayload[] }) => {
             target="_blank"
             className="flex items-center gap-4 border p-4 rounded-xl hover:bg-gray-100/50 cursor-pointer"
           >
-            <div className="flex-shrink-0 w-16 h-16 relative">
+            <div className="shrink-0 w-16 h-16 relative">
               <Image
                 src={issue.thumbnailLink}
                 alt={issue.title}

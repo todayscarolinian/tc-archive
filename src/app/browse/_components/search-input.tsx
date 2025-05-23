@@ -245,7 +245,7 @@ const SearchInput = () => {
                     className="p-4 flex border-b last:border-b-0 hover:bg-gray-50 cursor-pointer"
                   >
                     {/* Thumbnail placeholder */}
-                    <div className="max-w-16 max-h-16 bg-gray-200 rounded-md flex-shrink-0 mr-4 overflow-hidden">
+                    <div className="max-w-16 max-h-16 bg-gray-200 rounded-md shrink-0 mr-4 overflow-hidden">
                       <Image
                         src={issue.thumbnailLink || "/placeholder-image.png"}
                         alt="Thumbnail"

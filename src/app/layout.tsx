@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { Toaster } from "sonner";
+import { Analytics } from "@vercel/analytics/next";
 
 const robotoCondensed = Roboto_Condensed({
   subsets: ["latin"],
@@ -26,6 +27,7 @@ export default function RootLayout({
       <body className={`${robotoCondensed.variable} bg-[#F8F8F8]`}>
         <Navbar />
         {children}
+        <Analytics />
         <Footer />
         <Toaster />
       </body>

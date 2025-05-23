@@ -1,6 +1,5 @@
 import { Metadata } from "next";
 import SearchInput from "./_components/search-input";
-import { Analytics } from "@vercel/analytics/next";
 
 type BrowseLayoutProps = {
   children: React.ReactNode;
@@ -19,7 +18,6 @@ const BrowseLayout = ({ children }: BrowseLayoutProps) => {
       */}
       <SearchInput />
       {children}
-      <Analytics />
     </section>
   );
 };

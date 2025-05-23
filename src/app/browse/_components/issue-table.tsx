@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { FileText, ArrowUp, ArrowDown, Eye } from "lucide-react";
+import { ArrowUp, ArrowDown, Eye } from "lucide-react";
 import { useState } from "react";
 import IssueDialog from "@/components/issue-dialog";
 import { EditIssuePayload } from "@/lib/types/issues.types";
@@ -30,6 +30,8 @@ import {
   deleteIssue as deleteFirestoreIssue,
 } from "@/lib/firebase/firestore";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import { formatDistanceToNow } from "date-fns";
 
 const IssueTable = ({ issues: initialIssues, yearFolder }: IssueTableProps) => {
   const [user, setUser] = useState<User | null>(null);
@@ -77,8 +79,14 @@ const IssueTable = ({ issues: initialIssues, yearFolder }: IssueTableProps) => {
     columnHelper.accessor("title", {
       cell: (info) => (
         <div className="flex items-center gap-3">
-          <div className="border p-2 bg-gray-100/50 rounded-xl">
-            <FileText />
+          <div className="flex-shrink-0 w-16 h-16 relative">
+            <Image
+              src={info.row.original.thumbnailLink}
+              alt={info.row.original.title}
+              fill
+              className="rounded-lg object-cover"
+              sizes="64px"
+            />
           </div>
           <span className="font-semibold">{info.getValue()}</span>
         </div>
@@ -103,9 +111,9 @@ const IssueTable = ({ issues: initialIssues, yearFolder }: IssueTableProps) => {
     }),
     columnHelper.accessor("lastModified", {
       cell: (info) =>
-        `${new Date(info.getValue()).toLocaleDateString()} ${new Date(
-          info.getValue()
-        ).toLocaleTimeString()}`,
+        formatDistanceToNow(new Date(info.getValue()), {
+          addSuffix: true,
+        }),
       header: "Last Modified",
       enableSorting: true,
     }),

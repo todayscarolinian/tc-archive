@@ -1,0 +1,55 @@
+import { Dot } from "lucide-react";
+import useRecentIssues from "@/hooks/useRecentIssues";
+import { EditIssuePayload } from "@/lib/types/issues.types";
+import Link from "next/link";
+import Image from "next/image";
+import { formatDistanceToNow } from "date-fns";
+
+const Recents = ({ issues }: { issues: EditIssuePayload[] }) => {
+  const recentIssues = useRecentIssues(issues);
+
+  return (
+    <section className="space-y-6">
+      <h1 className="text-lg font-bold">Recent</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {recentIssues.map((issue, idx) => (
+          <Link
+            key={`${issue.title}-${issue.lastModified}-${idx}`}
+            href={issue.pdfLink}
+            target="_blank"
+            className="flex items-center gap-4 border p-4 rounded-xl hover:bg-gray-100/50 cursor-pointer"
+          >
+            <div className="shrink-0 w-16 h-16 relative">
+              <Image
+                src={issue.thumbnailLink}
+                alt={issue.title}
+                fill
+                className="rounded-lg object-cover"
+                sizes="64px"
+                priority={idx < 4}
+              />
+            </div>
+            {/* <div className="p-3.5 rounded-xl border bg-gray-100/50">
+              <FileText />
+            </div> */}
+            <div className="flex flex-col gap-1">
+              <h2 className="font-semibold">{issue.title}</h2>
+              <div className="text-sm text-muted-foreground flex items-center">
+                <p>{issue.publisher}</p>
+                <Dot className="mx-1 w-4 h-4" />
+                <p>{issue.category}</p>
+              </div>
+              <p className="text-xs text-gray-400">
+                {formatDistanceToNow(new Date(issue.lastModified), {
+                  addSuffix: true,
+                })}
+              </p>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+export default Recents;

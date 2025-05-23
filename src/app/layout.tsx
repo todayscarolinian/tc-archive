@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Roboto_Condensed } from "next/font/google";
 import "./globals.css";
+import Navbar from "@/components/layout/navbar";
+import Footer from "@/components/layout/footer";
+import { Toaster } from "sonner";
 
 const robotoCondensed = Roboto_Condensed({
   subsets: ["latin"],
@@ -20,8 +23,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${robotoCondensed.variable} antialiased`}>
+      <body className={`${robotoCondensed.variable} bg-[#F8F8F8]`}>
+        <Navbar />
         {children}
+        <Footer />
+        <Toaster />
       </body>
     </html>
   );

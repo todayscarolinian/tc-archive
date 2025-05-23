@@ -50,10 +50,11 @@ const SearchInput = () => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Cache duration in milliseconds (1 hour)
-  //   const CACHE_DURATION = 60 * 60 * 1000;
+  const CACHE_DURATION = 60 * 60 * 1000;
 
   //Cache duration in milliseconds (30 seconds) for testing
-  const CACHE_DURATION = 30 * 1000;
+  //   const CACHE_DURATION = 30 * 1000;
+
   const CACHE_KEY = "issuesCache";
   const CACHE_TIMESTAMP_KEY = "issuesCacheTimestamp";
 
@@ -187,19 +188,19 @@ const SearchInput = () => {
     inputRef.current?.focus();
   };
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "";
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString("en-US", {
-        month: "numeric",
-        day: "numeric",
-        year: "numeric",
-      });
-    } catch {
-      return "";
-    }
-  };
+  //   const formatDate = (dateString: string) => {
+  //     if (!dateString) return "";
+  //     try {
+  //       const date = new Date(dateString);
+  //       return date.toLocaleDateString("en-US", {
+  //         month: "numeric",
+  //         day: "numeric",
+  //         year: "numeric",
+  //       });
+  //     } catch {
+  //       return "";
+  //     }
+  //   };
 
   return (
     <div className="w-full max-w-lg mx-auto px-4 relative">
@@ -244,7 +245,7 @@ const SearchInput = () => {
                     className="p-4 flex border-b last:border-b-0 hover:bg-gray-50 cursor-pointer"
                   >
                     {/* Thumbnail placeholder */}
-                    <div className="max-w-16 max-h-16 bg-gray-200 rounded-md flex-shrink-0 mr-4 overflow-hidden">
+                    <div className="max-w-16 max-h-16 bg-gray-200 rounded-md shrink-0 mr-4 overflow-hidden">
                       <Image
                         src={issue.thumbnailLink || "/placeholder-image.png"}
                         alt="Thumbnail"
@@ -259,7 +260,8 @@ const SearchInput = () => {
                         {issue.title}
                       </h3>
                       <p className="text-sm text-gray-600 mt-1">
-                        {formatDate(issue.lastModified)}
+                        {issue.category} | Volume {issue.volume} | Issue{" "}
+                        {issue.issueNumber} | {issue.publicationYear}
                       </p>
                       <p className="text-xs text-gray-600">
                         Published by{" "}

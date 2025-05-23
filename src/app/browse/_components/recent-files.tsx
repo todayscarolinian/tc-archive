@@ -3,6 +3,7 @@ import useRecentIssues from "@/hooks/useRecentIssues";
 import { EditIssuePayload } from "@/lib/types/issues.types";
 import Link from "next/link";
 import Image from "next/image";
+import { formatDistanceToNow } from "date-fns";
 
 const Recents = ({ issues }: { issues: EditIssuePayload[] }) => {
   const recentIssues = useRecentIssues(issues);
@@ -18,7 +19,7 @@ const Recents = ({ issues }: { issues: EditIssuePayload[] }) => {
             target="_blank"
             className="flex items-center gap-4 border p-4 rounded-xl hover:bg-gray-100/50 cursor-pointer"
           >
-            <div className="flex-shrink-0 w-16 h-16 relative">
+            <div className="shrink-0 w-16 h-16 relative">
               <Image
                 src={issue.thumbnailLink}
                 alt={issue.title}
@@ -38,7 +39,11 @@ const Recents = ({ issues }: { issues: EditIssuePayload[] }) => {
                 <Dot className="mx-1 w-4 h-4" />
                 <p>{issue.category}</p>
               </div>
-              <p className="text-xs text-gray-400">{issue.lastModified}</p>
+              <p className="text-xs text-gray-400">
+                {formatDistanceToNow(new Date(issue.lastModified), {
+                  addSuffix: true,
+                })}
+              </p>
             </div>
           </Link>
         ))}

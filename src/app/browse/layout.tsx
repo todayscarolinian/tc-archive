@@ -1,13 +1,14 @@
 import { Metadata } from "next";
 import SearchInput from "./_components/search-input";
+import { Analytics } from "@vercel/analytics/next";
 
 type BrowseLayoutProps = {
   children: React.ReactNode;
 };
 
 export const metadata: Metadata = {
-  title: "Browse | Digital Archive"
-}
+  title: "Browse | Digital Archive",
+};
 
 const BrowseLayout = ({ children }: BrowseLayoutProps) => {
   return (
@@ -18,6 +19,7 @@ const BrowseLayout = ({ children }: BrowseLayoutProps) => {
       */}
       <SearchInput />
       {children}
+      <Analytics />
     </section>
   );
 };

@@ -6,8 +6,8 @@ type BrowseLayoutProps = {
 };
 
 export const metadata: Metadata = {
-  title: "Browse | Digital Archive"
-}
+  title: "Browse | Digital Archive",
+};
 
 const BrowseLayout = ({ children }: BrowseLayoutProps) => {
   return (

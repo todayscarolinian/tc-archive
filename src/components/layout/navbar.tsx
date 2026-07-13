@@ -20,18 +20,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useState } from "react";
-import { onAuthStateChanged, signOut } from "@/lib/firebase/auth";
-import { User } from "firebase/auth";
-import { useRouter } from "next/navigation";
+import { useHasHeraldDomainAccess } from "@/lib/herald/use-has-domain-access";
+import { heraldLogout } from "@/lib/herald/logout";
 
 export default function Navbar() {
-  const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-
-  onAuthStateChanged((user) => {
-    setUser(user);
-  });
+  const { hasAccess, isPending } = useHasHeraldDomainAccess();
 
   return (
     <header className="fixed bg-[#F8F8F8] border-b w-full top-0 flex h-20 items-center justify-between gap-4 px-4 md:px-6 z-50">
@@ -142,7 +135,7 @@ export default function Navbar() {
         </SheetContent>
       </Sheet>
 
-      {user && (
+      {hasAccess && (
         <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
           <div className="ml-auto flex-1 sm:flex-initial"></div>
           <DropdownMenu>
@@ -165,17 +158,20 @@ export default function Navbar() {
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuItem>Support</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={async () => {
-                  await signOut();
-                  router.push("/");
-                }}
-              >
+              <DropdownMenuItem onClick={() => heraldLogout()}>
                 Logout
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+      )}
+      {!hasAccess && !isPending && process.env.NEXT_PUBLIC_HERALD_LOGIN_URL && (
+        <Link
+          href={process.env.NEXT_PUBLIC_HERALD_LOGIN_URL}
+          className="ml-auto text-black transition-colors hover:text-primary-500 hover:font-bold text-base"
+        >
+          Sign In
+        </Link>
       )}
     </header>
   );

@@ -10,6 +10,13 @@ const nextConfig: NextConfig = {
             // Add any other domains you need to use
         ],
     },
+    experimental: {
+        serverActions: {
+            // Issue thumbnails/PDFs are uploaded through Server Actions; raise
+            // the default ~1mb body limit to accommodate multi-MB PDF issues.
+            bodySizeLimit: '50mb',
+        },
+    },
 };
 
 export default nextConfig;

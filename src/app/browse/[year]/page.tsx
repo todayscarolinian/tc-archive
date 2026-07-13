@@ -1,12 +1,11 @@
 "use client";
-import IssueDialog from "@/components/issue-dialog";
-import { AddIssuePayload, EditIssuePayload } from "@/lib/types/issues.types";
+import IssueDialog, { IssueDialogSuccess } from "@/components/issue-dialog";
+import { EditIssuePayload } from "@/lib/types/issues.types";
 import { use, useEffect, useState } from "react";
 import IssueTable from "../_components/issue-table";
-import { User } from "firebase/auth";
-import { onAuthStateChanged } from "@/lib/firebase/auth";
+import { useHasHeraldDomainAccess } from "@/lib/herald/use-has-domain-access";
 import IssueTableSkeleton from "../_components/issue-table-skeleton";
-import { getIssuesByYear, addIssue } from "@/lib/firebase/firestore";
+import { getIssuesByYear } from "@/lib/firebase/firestore";
 
 interface PageProps {
   params: Promise<{ year: string }>;
@@ -14,11 +13,7 @@ interface PageProps {
 export default function BrowsePage({ params }: PageProps) {
   const { year } = use(params) as { year: string };
   const [issues, setIssues] = useState<EditIssuePayload[]>([]);
-  const [user, setUser] = useState<User | null>(null);
-
-  onAuthStateChanged((user) => {
-    setUser(user);
-  });
+  const { hasAccess } = useHasHeraldDomainAccess();
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -38,20 +33,9 @@ export default function BrowsePage({ params }: PageProps) {
     fetchIssues();
   }, [year]);
 
-  const handleAddIssue = async (data: AddIssuePayload) => {
-    try {
-      console.log("Form data:", data);
-      setIsLoading(true);
-
-      const newIssueId = await addIssue(data);
-
-      setIssues((prev) => [...prev, { ...data, id: newIssueId }]);
-
-      console.log("Issue added successfully with ID:", newIssueId);
-    } catch (error) {
-      console.error("Failed to add issue:", error);
-    } finally {
-      setIsLoading(false);
+  const handleAddSuccess = (result: IssueDialogSuccess) => {
+    if (result.mode === "add") {
+      setIssues((prev) => [...prev, result.issue]);
     }
   };
 
@@ -61,10 +45,10 @@ export default function BrowsePage({ params }: PageProps) {
         <h1 className="font-bold text-2xl">Index of /browse/{year}</h1>
         <div className="flex items-center justify-between">
           <h1 className="text-lg">All Files</h1>
-          {user && (
+          {hasAccess && (
             <IssueDialog
               mode="add"
-              onSubmit={handleAddIssue}
+              onSuccess={handleAddSuccess}
               yearFromRoute={year}
             />
           )}

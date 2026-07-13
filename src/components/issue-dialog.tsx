@@ -36,20 +36,21 @@ import {
 } from "./ui/select";
 import { FileText, Pencil, Plus, Upload } from "lucide-react";
 import Image from "next/image";
-import {
-  deleteObject,
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytes,
-} from "firebase/storage";
 import { toast } from "sonner";
+import {
+  addIssueAction,
+  editIssueAction,
+  deleteIssueAction,
+} from "@/app/actions/issues";
+
+export type IssueDialogSuccess =
+  | { mode: "add" | "edit"; issue: EditIssuePayload }
+  | { mode: "delete"; id: string };
 
 interface IssueDialogProps {
   mode: "add" | "edit";
   defaultValues?: EditIssuePayload;
-  onSubmit: (data: EditIssuePayload) => Promise<void>;
-  onDelete?: (id: string) => Promise<void>;
+  onSuccess?: (result: IssueDialogSuccess) => void;
   yearFromRoute?: string;
   //   issueData?: EditIssuePayload;
 }
@@ -57,8 +58,7 @@ interface IssueDialogProps {
 export default function IssueDialog({
   mode,
   defaultValues,
-  onSubmit,
-  onDelete,
+  onSuccess,
   yearFromRoute,
 }: //   issueData,
 IssueDialogProps) {
@@ -92,59 +92,31 @@ IssueDialogProps) {
   async function handleSubmit(data: AddIssuePayload | EditIssuePayload) {
     setLoading(true);
     try {
-      // Prepare a copy of the data to mutate
-      const processedData = { ...data };
+      const formData = new FormData();
+      formData.set("title", data.title);
+      formData.set("publisher", data.publisher);
+      formData.set("publicationYear", String(data.publicationYear));
+      formData.set("volume", String(data.volume));
+      formData.set("issueNumber", String(data.issueNumber));
+      formData.set("category", data.category);
+      if (thumbnailFile) formData.set("thumbnail", thumbnailFile);
+      if (pdfFile) formData.set("pdf", pdfFile);
 
-      // Only for edit mode: delete old files if new ones are uploaded
-      if (mode === "edit" && defaultValues) {
-        const storage = getStorage();
-        // Delete old thumbnail if a new one is uploaded
-        if (thumbnailFile && defaultValues.thumbnailLink) {
-          try {
-            const oldThumbRef = ref(storage, defaultValues.thumbnailLink);
-            await deleteObject(oldThumbRef);
-          } catch (e) {
-            // Ignore if not found or error
-            console.warn("Could not delete old thumbnail:", e);
-          }
-        }
-        // Delete old PDF if a new one is uploaded
-        if (pdfFile && defaultValues.pdfLink) {
-          try {
-            const oldPdfRef = ref(storage, defaultValues.pdfLink);
-            await deleteObject(oldPdfRef);
-          } catch (e) {
-            // Ignore if not found or error
-            console.warn("Could not delete old PDF:", e);
-          }
-        }
-      }
+      const result =
+        mode === "add"
+          ? await addIssueAction(formData)
+          : await (async () => {
+              const editData = data as EditIssuePayload;
+              formData.set("id", editData.id);
+              formData.set("previousThumbnailLink", editData.thumbnailLink);
+              formData.set("previousPdfLink", editData.pdfLink);
+              formData.set("previousCreatedBy", editData.createdBy);
+              return editIssueAction(formData);
+            })();
 
-      if (thumbnailFile) {
-        const storage = getStorage();
-        const thumbnailRef = ref(
-          storage,
-          `thumbnails/${data.title}-${Date.now()}`
-        );
-        await uploadBytes(thumbnailRef, thumbnailFile);
-        processedData.thumbnailLink = await getDownloadURL(thumbnailRef);
-      }
-
-      if (pdfFile) {
-        const storage = getStorage();
-        const pdfRef = ref(storage, `pdfs/${data.title}-${Date.now()}.pdf`);
-        await uploadBytes(pdfRef, pdfFile);
-        processedData.pdfLink = await getDownloadURL(pdfRef);
-      }
-
-      if (mode === "add") {
-        const transformedData: EditIssuePayload = {
-          id: `${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
-          ...(processedData as AddIssuePayload),
-        };
-        await onSubmit(transformedData);
-      } else {
-        await onSubmit(processedData as EditIssuePayload);
+      if (!result.success) {
+        toast.error(result.message);
+        return;
       }
 
       setOpen(false);
@@ -156,6 +128,7 @@ IssueDialogProps) {
           ? "Issue added successfully!"
           : "Issue updated successfully!"
       );
+      onSuccess?.({ mode, issue: result.issue });
     } catch (error) {
       console.error("Error in form submission:", error);
       toast.error("There was an error submitting the form.");
@@ -166,31 +139,27 @@ IssueDialogProps) {
 
   const handleDelete = async () => {
     setLoading(true);
-    if (defaultValues?.id && onDelete) {
+    if (defaultValues?.id) {
       try {
-        // Delete associated files from storage before deleting the issue
-        const storage = getStorage();
-        if (defaultValues.thumbnailLink) {
-          try {
-            const thumbRef = ref(storage, defaultValues.thumbnailLink);
-            await deleteObject(thumbRef);
-          } catch (e) {
-            console.warn("Could not delete thumbnail on issue delete:", e);
-          }
+        const formData = new FormData();
+        formData.set("id", defaultValues.id);
+        if (defaultValues.thumbnailLink)
+          formData.set("thumbnailLink", defaultValues.thumbnailLink);
+        if (defaultValues.pdfLink)
+          formData.set("pdfLink", defaultValues.pdfLink);
+
+        const result = await deleteIssueAction(formData);
+        if (!result.success) {
+          toast.error(result.message);
+          return;
         }
-        if (defaultValues.pdfLink) {
-          try {
-            const pdfRef = ref(storage, defaultValues.pdfLink);
-            await deleteObject(pdfRef);
-          } catch (e) {
-            console.warn("Could not delete PDF on issue delete:", e);
-          }
-        }
-        await onDelete(defaultValues.id);
+
         setOpenDelete(false);
         setOpen(false);
+        onSuccess?.({ mode: "delete", id: defaultValues.id });
       } catch (error) {
         console.error("Error deleting issue:", error);
+        toast.error("There was an error deleting the issue.");
       } finally {
         setLoading(false);
       }

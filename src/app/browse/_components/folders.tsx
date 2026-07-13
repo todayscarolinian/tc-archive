@@ -2,12 +2,9 @@
 import { Dot, FolderOpen } from "lucide-react";
 import { useRouter } from "next/navigation";
 import useGroupedIssues from "@/hooks/useGroupedIssuesByYear";
-import IssueDialog from "@/components/issue-dialog";
-import { AddIssuePayload, EditIssuePayload } from "@/lib/types/issues.types";
-import { useState } from "react";
-import { User } from "firebase/auth";
-import { onAuthStateChanged } from "@/lib/firebase/auth";
-import { addIssue } from "@/lib/firebase/firestore";
+import IssueDialog, { IssueDialogSuccess } from "@/components/issue-dialog";
+import { EditIssuePayload } from "@/lib/types/issues.types";
+import { useHasHeraldDomainAccess } from "@/lib/herald/use-has-domain-access";
 import { formatDistanceToNow } from "date-fns";
 
 interface FoldersProps {
@@ -17,27 +14,14 @@ interface FoldersProps {
 
 const Folders = ({ issues, setIssues }: FoldersProps) => {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+  const { hasAccess } = useHasHeraldDomainAccess();
 
   // Group issues by publication year
   const yearFolders = useGroupedIssues(issues);
 
-  onAuthStateChanged((user) => {
-    setUser(user);
-  });
-
-  // Simulated add issue function
-  const handleAddIssue = async (data: AddIssuePayload) => {
-    try {
-      console.log("Form data:", data);
-
-      const newIssueId = await addIssue(data);
-
-      setIssues((prev) => [...prev, { ...data, id: newIssueId }]);
-
-      console.log("Issue added successfully with ID:", newIssueId);
-    } catch (error) {
-      console.error("Failed to add issue:", error);
+  const handleAddSuccess = (result: IssueDialogSuccess) => {
+    if (result.mode === "add") {
+      setIssues((prev) => [...prev, result.issue]);
     }
   };
 
@@ -48,7 +32,9 @@ const Folders = ({ issues, setIssues }: FoldersProps) => {
           <FolderOpen />
           <h1 className="text-lg font-bold">Folders</h1>
         </div>
-        {user && <IssueDialog mode="add" onSubmit={handleAddIssue} />}
+        {hasAccess && (
+          <IssueDialog mode="add" onSuccess={handleAddSuccess} />
+        )}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {/* Simulate: only display year with existing issues */}

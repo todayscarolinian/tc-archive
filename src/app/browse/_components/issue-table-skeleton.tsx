@@ -9,22 +9,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { IssueTableProps } from "../_types/issue-table.types";
-import { useState } from "react";
-import { User } from "firebase/auth";
-import { onAuthStateChanged } from "@/lib/firebase/auth";
+import { useHasHeraldDomainAccess } from "@/lib/herald/use-has-domain-access";
 
 const IssueTableSkeleton = ({ issues }: IssueTableProps) => {
-  const [user, setUser] = useState<User | null>(null);
+  const { hasAccess } = useHasHeraldDomainAccess();
 
-  onAuthStateChanged((user) => {
-    setUser(user);
-  });
-
-  /* 
+  /*
     Admin user: Constant 6 columns (Name, Publisher, Volume, Category, Last Modified, Action)
     Constant 5 columns if not admin (Name, Publisher, Volume, Category, Last Modified)
   */
-  const columnCount = user ? 6 : 5;
+  const columnCount = hasAccess ? 6 : 5;
   const skeletonColumns = Array.from({ length: columnCount });
 
   return (
@@ -64,7 +58,7 @@ const IssueTableSkeleton = ({ issues }: IssueTableProps) => {
                       <Skeleton className="h-9 w-9 rounded-xl" />
                       <Skeleton className="h-4 w-32" />
                     </div>
-                  ) : colIndex === 5 && user ? (
+                  ) : colIndex === 5 && hasAccess ? (
                     <Skeleton className="h-9 w-9 rounded-md" />
                   ) : (
                     <Skeleton className="h-4 w-24" />

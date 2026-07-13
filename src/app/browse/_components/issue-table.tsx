@@ -17,28 +17,19 @@ import {
 } from "@/components/ui/table";
 import { ArrowUp, ArrowDown, Eye } from "lucide-react";
 import { useState } from "react";
-import IssueDialog from "@/components/issue-dialog";
+import IssueDialog, { IssueDialogSuccess } from "@/components/issue-dialog";
 import { EditIssuePayload } from "@/lib/types/issues.types";
-import { User } from "firebase/auth";
-import { onAuthStateChanged } from "@/lib/firebase/auth";
+import { useHasHeraldDomainAccess } from "@/lib/herald/use-has-domain-access";
 import {
   IssueTableColumnType,
   IssueTableProps,
 } from "../_types/issue-table.types";
-import {
-  editIssue as updateFirestoreIssue,
-  deleteIssue as deleteFirestoreIssue,
-} from "@/lib/firebase/firestore";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 
 const IssueTable = ({ issues: initialIssues, yearFolder }: IssueTableProps) => {
-  const [user, setUser] = useState<User | null>(null);
-
-  onAuthStateChanged((user) => {
-    setUser(user);
-  });
+  const { hasAccess } = useHasHeraldDomainAccess();
 
   const columnHelper = createColumnHelper<IssueTableColumnType>();
   const [sorting, setSorting] = useState<SortingState>([
@@ -47,31 +38,17 @@ const IssueTable = ({ issues: initialIssues, yearFolder }: IssueTableProps) => {
 
   const [issues, setIssues] = useState<EditIssuePayload[]>(initialIssues);
 
-  const handleEditIssue = async (data: EditIssuePayload) => {
-    try {
-      await updateFirestoreIssue(data);
-
+  const handleEditSuccess = (result: IssueDialogSuccess) => {
+    if (result.mode === "edit") {
       setIssues((prevIssues) =>
-        prevIssues.map((issue) => (issue.id === data.id ? data : issue))
+        prevIssues.map((issue) =>
+          issue.id === result.issue.id ? result.issue : issue
+        )
       );
-
-      console.log("Issue updated successfully");
-    } catch (error) {
-      console.error(error);
-      console.log("Failed to update issue");
-    }
-  };
-
-  const handleDeleteIssue = async (id: string) => {
-    try {
-      await deleteFirestoreIssue({ id });
-
-      setIssues((prevIssues) => prevIssues.filter((issue) => issue.id !== id));
-
-      console.log("Issue deleted successfully");
-    } catch (error) {
-      console.error(error);
-      console.log("Failed to delete issue");
+    } else if (result.mode === "delete") {
+      setIssues((prevIssues) =>
+        prevIssues.filter((issue) => issue.id !== result.id)
+      );
     }
   };
 
@@ -117,7 +94,7 @@ const IssueTable = ({ issues: initialIssues, yearFolder }: IssueTableProps) => {
       header: "Last Modified",
       enableSorting: true,
     }),
-    ...(user
+    ...(hasAccess
       ? [
           columnHelper.accessor("isAdmin", {
             cell: (info) => (
@@ -135,8 +112,7 @@ const IssueTable = ({ issues: initialIssues, yearFolder }: IssueTableProps) => {
                 <IssueDialog
                   mode="edit"
                   defaultValues={info.row.original}
-                  onSubmit={handleEditIssue}
-                  onDelete={handleDeleteIssue}
+                  onSuccess={handleEditSuccess}
                 />
               </div>
             ),

@@ -21,7 +21,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useHasHeraldDomainAccess } from "@/lib/herald/use-has-domain-access";
-import { heraldLogout } from "@/lib/herald/logout";
+import { signOutFromHerald } from "@/lib/herald/auth-client";
 
 export default function Navbar() {
   const { hasAccess, isPending } = useHasHeraldDomainAccess();
@@ -158,20 +158,12 @@ export default function Navbar() {
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuItem>Support</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => heraldLogout()}>
+              <DropdownMenuItem onClick={() => signOutFromHerald()} disabled={isPending}>
                 Logout
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      )}
-      {!hasAccess && !isPending && process.env.NEXT_PUBLIC_HERALD_LOGIN_URL && (
-        <Link
-          href={process.env.NEXT_PUBLIC_HERALD_LOGIN_URL}
-          className="ml-auto text-black transition-colors hover:text-primary-500 hover:font-bold text-base"
-        >
-          Sign In
-        </Link>
       )}
     </header>
   );

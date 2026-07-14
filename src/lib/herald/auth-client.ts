@@ -6,3 +6,10 @@ export const authClient = createAuthClient({
 });
 
 export const { useSession } = authClient;
+
+export async function signOutFromHerald() {
+  await fetch(`${process.env.NEXT_PUBLIC_HERALD_AUTH_URL}/auth/logout`, {
+    method: "POST",
+    credentials: "include",
+  });
+}

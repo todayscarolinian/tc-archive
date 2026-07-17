@@ -42,6 +42,8 @@ import {
   editIssueAction,
   deleteIssueAction,
 } from "@/app/actions/issues";
+import { useSession } from "@/lib/herald/auth-client";
+import type { HeraldUser } from "@/lib/herald/types";
 
 export type IssueDialogSuccess =
   | { mode: "add" | "edit"; issue: EditIssuePayload }
@@ -67,6 +69,8 @@ IssueDialogProps) {
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const { data: session } = useSession();
+  const heraldUser = session?.user as HeraldUser | undefined;
 
   const form = useForm<AddIssuePayload | EditIssuePayload>({
     resolver: zodResolver(mode === "add" ? AddIssueSchema : EditIssueSchema),
@@ -83,7 +87,7 @@ IssueDialogProps) {
             category: "Magazine" as const,
             thumbnailLink: "",
             pdfLink: "",
-            createdBy: "placeholder-user",
+            createdBy: heraldUser?.email ?? "",
             lastModified: new Date().toISOString(),
           }
         : defaultValues,
